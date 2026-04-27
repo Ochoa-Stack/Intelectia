@@ -1,0 +1,6 @@
+@Intelectia.API_HostAddress = http://localhost:5028
+
+GET {{Intelectia.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="Intelectia.API/Intelectia.API.csproj" />
+  <Project Path="Intelectia.Application/Intelectia.Application.csproj" />
+  <Project Path="Intelectia.Domain/Intelectia.Domain.csproj" />
+  <Project Path="Intelectia.Infrastructure/Intelectia.Infrastructure.csproj" />
+  <Project Path="Intelectia.Shared/Intelectia.Shared.csproj" />
+  <Project Path="Intelectia.WPF/Intelectia.WPF.csproj" />
+</Solution>
