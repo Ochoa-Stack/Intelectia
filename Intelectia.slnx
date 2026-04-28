@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Elementos de la solución/">
+    <File Path=".gitignore" />
+  </Folder>
   <Project Path="Intelectia.API/Intelectia.API.csproj" />
   <Project Path="Intelectia.Application/Intelectia.Application.csproj" />
   <Project Path="Intelectia.Domain/Intelectia.Domain.csproj" />
