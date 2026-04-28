@@ -6,6 +6,7 @@ using Intelectia.Domain.Interfaces;
 using Intelectia.Domain.Interfaces.Repositories;
 using Intelectia.Infrastructure.Persistence;
 using Intelectia.Infrastructure.Repositories;
+using Intelectia.Infrastructure.Services;
 
 namespace Intelectia.Infrastructure;
 
@@ -25,6 +26,14 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+        // Registramos el repositorio concreto de usuarios
+        services.AddScoped<IUserRepository, UserRepository>();
+
+        // Registramos los servicios de infraestructura
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<IEmailService, EmailService>();
 
         // Registramos el seeder como servicio con acceso al contexto
         services.AddScoped<DatabaseSeeder>();

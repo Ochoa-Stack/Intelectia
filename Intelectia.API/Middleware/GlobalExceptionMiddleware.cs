@@ -24,7 +24,7 @@ public class GlobalExceptionMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
+            _logger.LogError(ex, "Excepción no controlada: {Message}", ex.Message);
             await HandleExceptionAsync(context, ex);
         }
     }
@@ -33,11 +33,14 @@ public class GlobalExceptionMiddleware
     {
         context.Response.ContentType = "application/json";
 
+        // Mapeamos cada tipo de excepción al código HTTP correspondiente
         var (statusCode, message, errors) = exception switch
         {
-            ValidationException ve => (HttpStatusCode.BadRequest, ve.Message, (object?)ve.Errors),
-            NotFoundException nfe  => (HttpStatusCode.NotFound, nfe.Message, null),
-            _                      => (HttpStatusCode.InternalServerError, "An unexpected error occurred.", null)
+            ValidationException ve   => (HttpStatusCode.BadRequest,          ve.Message,  (object?)ve.Errors),
+            NotFoundException nfe    => (HttpStatusCode.NotFound,            nfe.Message, null),
+            ConflictException ce     => (HttpStatusCode.Conflict,            ce.Message,  null),
+            UnauthorizedException ue => (HttpStatusCode.Unauthorized,        ue.Message,  null),
+            _                        => (HttpStatusCode.InternalServerError, "Ocurrió un error inesperado.", null)
         };
 
         context.Response.StatusCode = (int)statusCode;
