@@ -52,7 +52,8 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
         var newRefreshTokenValue = _tokenService.GenerateRefreshToken();
         storedToken.User.RefreshTokens.Add(new RefreshTokenEntity
         {
-            Token = newRefreshTokenValue,
+            UserId    = storedToken.User.Id,  // explícito para que EF asigne estado Added
+            Token     = newRefreshTokenValue,
             ExpiresAt = DateTime.UtcNow.AddDays(30)
         });
 

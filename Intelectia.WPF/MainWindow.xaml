@@ -7,7 +7,8 @@
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BackgroundBrush}">
     <Grid>
-        <Frame x:Name="NavigationFrame"
-               NavigationUIVisibility="Hidden"/>
+        <!-- ContentControl muestra el ViewModel activo; el DataTemplate resuelve qué View usar -->
+        <ContentControl x:Name="NavigationFrame"
+                        Content="{Binding CurrentViewModel}"/>
     </Grid>
 </Window>

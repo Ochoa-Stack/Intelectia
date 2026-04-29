@@ -1,7 +1,7 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Intelectia.Application.Common.Exceptions;
 using Intelectia.Application.Common.Interfaces;
-using Intelectia.Domain.Entities;
 using Intelectia.Domain.Enums;
 using Intelectia.Domain.Interfaces;
 using Intelectia.Domain.Interfaces.Repositories;
@@ -15,57 +15,58 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenService _tokenService;
+    private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
 
     public LoginCommandHandler(
         IUserRepository userRepository,
         IPasswordHasher passwordHasher,
         ITokenService tokenService,
+        IApplicationDbContext context,
         IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _tokenService = tokenService;
+        _context = context;
         _unitOfWork = unitOfWork;
     }
 
     public async Task<AuthResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        // Buscamos el usuario por correo
-        var userByEmail = await _userRepository.GetByEmailAsync(request.Email, cancellationToken);
+        // Cargamos el usuario con perfiles; una sola query, tracking activo
+        var user = await _userRepository.GetByEmailWithProfilesAsync(request.Email, cancellationToken);
 
-        // Cargamos el usuario completo con perfiles y tokens si existe
-        var user = userByEmail is not null
-            ? await _userRepository.GetByIdWithProfilesAsync(userByEmail.Id, cancellationToken)
-            : null;
-
-        // Usamos el mismo mensaje para email incorrecto y contraseña incorrecta
-        // para no dar pistas sobre qué campo falló
+        // Mismo mensaje para email y contraseña incorrectos; no revelamos cuál falla
         if (user is null || user.AuthProvider != AuthProvider.Local || user.PasswordHash is null)
             throw new UnauthorizedException("Credenciales inválidas.");
 
-        var passwordValid = _passwordHasher.Verify(request.Password, user.PasswordHash);
-        if (!passwordValid)
+        if (!_passwordHasher.Verify(request.Password, user.PasswordHash))
             throw new UnauthorizedException("Credenciales inválidas.");
 
-        // Revocamos los refresh tokens anteriores que siguen activos
-        foreach (var token in user.RefreshTokens.Where(t => t.IsActive))
+        // Revocamos los refresh tokens activos de este usuario directamente en el DbSet
+        // para evitar conflictos de tracking al mezclar entidades cargadas y nuevas
+        var activeTokens = await _context.RefreshTokens
+            .Where(t => t.UserId == user.Id && t.RevokedAt == null && t.UsedAt == null && t.ExpiresAt > DateTime.UtcNow)
+            .ToListAsync(cancellationToken);
+
+        foreach (var token in activeTokens)
             token.RevokedAt = DateTime.UtcNow;
 
-        // Generamos un nuevo refresh token para esta sesión
+        // Creamos el nuevo refresh token y lo añadimos directamente al DbSet (estado = Added)
         var refreshTokenValue = _tokenService.GenerateRefreshToken();
-        user.RefreshTokens.Add(new RefreshTokenEntity
+        await _context.RefreshTokens.AddAsync(new RefreshTokenEntity
         {
-            Token = refreshTokenValue,
+            UserId    = user.Id,
+            Token     = refreshTokenValue,
             ExpiresAt = DateTime.UtcNow.AddDays(30)
-        });
+        }, cancellationToken);
 
         // Actualizamos la fecha del último acceso
         user.LastLoginAt = DateTime.UtcNow;
-        _userRepository.Update(user);
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // Generamos el JWT y devolvemos la respuesta
         var accessToken = _tokenService.GenerateAccessToken(user);
 
         return new AuthResponseDto

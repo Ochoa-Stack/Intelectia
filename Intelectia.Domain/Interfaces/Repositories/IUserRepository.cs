@@ -4,8 +4,11 @@ namespace Intelectia.Domain.Interfaces.Repositories;
 
 public interface IUserRepository
 {
-    // Busca un usuario por su dirección de correo
+    // Busca un usuario por su dirección de correo (sin navigation properties)
     Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
+
+    // Busca por email e incluye perfiles y tokens en una sola consulta
+    Task<User?> GetByEmailWithProfilesAsync(string email, CancellationToken cancellationToken = default);
 
     // Busca un usuario por su ID de cuenta Google
     Task<User?> GetByGoogleIdAsync(string googleId, CancellationToken cancellationToken = default);
