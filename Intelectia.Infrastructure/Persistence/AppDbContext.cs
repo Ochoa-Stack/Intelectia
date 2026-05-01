@@ -15,9 +15,15 @@ public class AppDbContext : DbContext, IApplicationDbContext
     public DbSet<VendorProfile> VendorProfiles => Set<VendorProfile>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
+    // Tablas del Marketplace
+    public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Book> Books => Set<Book>();
+    public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<UserBook> UserBooks => Set<UserBook>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Aplica todas las configuraciones del mismo ensamblado automáticamente
+        // Aplica todas las configuraciones del ensamblado automáticamente
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
     }
@@ -30,7 +36,6 @@ public class AppDbContext : DbContext, IApplicationDbContext
             if (entry.State == EntityState.Modified)
                 entry.Entity.UpdatedAt = DateTime.UtcNow;
         }
-
         return base.SaveChangesAsync(cancellationToken);
     }
 }

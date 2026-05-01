@@ -16,19 +16,26 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        // Conectamos EF Core con SQL Server usando la connection string de user-secrets
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(
                 configuration.GetConnectionString("Default"),
                 sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
+        // Exponemos el contexto a través de la interfaz de Application
         services.AddScoped<IApplicationDbContext>(
             p => p.GetRequiredService<AppDbContext>());
 
+        // Registramos el patrón Unit of Work y el repositorio genérico
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-        // Registramos el repositorio concreto de usuarios
+        // Registramos los repositorios concretos de auth
         services.AddScoped<IUserRepository, UserRepository>();
+
+        // Registramos los repositorios del Marketplace
+        services.AddScoped<IBookRepository, BookRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
 
         // Registramos los servicios de infraestructura
         services.AddScoped<ITokenService, TokenService>();

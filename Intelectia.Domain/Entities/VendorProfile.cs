@@ -22,4 +22,7 @@ public class VendorProfile : BaseEntity
 
     // Fecha en que el perfil de vendedor fue aprobado
     public DateTime? ActivatedAt { get; set; }
+
+    // Libros publicados por este vendedor
+    public ICollection<Book> Books { get; set; } = new List<Book>();
 }

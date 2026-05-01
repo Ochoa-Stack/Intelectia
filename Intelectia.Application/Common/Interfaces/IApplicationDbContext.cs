@@ -5,8 +5,14 @@ namespace Intelectia.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
-    // Acceso a los refresh tokens para validación y rotación
+    // Tablas de auth
     DbSet<RefreshToken> RefreshTokens { get; }
+
+    // Tablas del Marketplace
+    DbSet<Book> Books { get; }
+    DbSet<Category> Categories { get; }
+    DbSet<Review> Reviews { get; }
+    DbSet<UserBook> UserBooks { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

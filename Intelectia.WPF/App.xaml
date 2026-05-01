@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:Intelectia.WPF.Converters"
              xmlns:authVm="clr-namespace:Intelectia.WPF.ViewModels.Auth"
-             xmlns:authV="clr-namespace:Intelectia.WPF.Views.Auth">
+             xmlns:authV="clr-namespace:Intelectia.WPF.Views.Auth"
+             xmlns:vm="clr-namespace:Intelectia.WPF.ViewModels"
+             xmlns:v="clr-namespace:Intelectia.WPF.Views">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -11,21 +13,27 @@
                 <ResourceDictionary Source="Themes/Typography.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Converter disponible en todas las vistas -->
+            <!-- Converters disponibles en todas las vistas -->
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
 
-            <!-- Cada DataTemplate conecta un ViewModel con su View correspondiente -->
-            <!-- WPF aplica el template correcto automáticamente según el tipo del objeto -->
+            <!-- DataTemplates de auth -->
             <DataTemplate DataType="{x:Type authVm:LoginViewModel}">
                 <authV:LoginView/>
             </DataTemplate>
-
             <DataTemplate DataType="{x:Type authVm:RegisterViewModel}">
                 <authV:RegisterView/>
             </DataTemplate>
-
             <DataTemplate DataType="{x:Type authVm:ForgotPasswordViewModel}">
                 <authV:ForgotPasswordView/>
+            </DataTemplate>
+
+            <!-- DataTemplates del Marketplace -->
+            <DataTemplate DataType="{x:Type vm:MarketplaceViewModel}">
+                <v:MarketplaceView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:BookDetailViewModel}">
+                <v:BookDetailView/>
             </DataTemplate>
 
         </ResourceDictionary>

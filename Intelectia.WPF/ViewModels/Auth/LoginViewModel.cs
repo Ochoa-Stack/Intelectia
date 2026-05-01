@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.Input;
 using Intelectia.Shared.DTOs.Auth;
 using Intelectia.WPF.Core;
 using Intelectia.WPF.Services;
+using Intelectia.WPF.ViewModels;
 
 namespace Intelectia.WPF.ViewModels.Auth;
 
@@ -11,6 +12,7 @@ public partial class LoginViewModel : BaseViewModel
     private readonly NavigationService _navigationService;
     private readonly Func<RegisterViewModel> _registerVmFactory;
     private readonly Func<ForgotPasswordViewModel> _forgotPasswordVmFactory;
+    private readonly Func<MarketplaceViewModel> _marketplaceVmFactory;
 
     [CommunityToolkit.Mvvm.ComponentModel.ObservableProperty]
     private string _email = string.Empty;
@@ -27,12 +29,14 @@ public partial class LoginViewModel : BaseViewModel
         AuthService authService,
         NavigationService navigationService,
         Func<RegisterViewModel> registerVmFactory,
-        Func<ForgotPasswordViewModel> forgotPasswordVmFactory)
+        Func<ForgotPasswordViewModel> forgotPasswordVmFactory,
+        Func<MarketplaceViewModel> marketplaceVmFactory)
     {
-        _authService = authService;
-        _navigationService = navigationService;
-        _registerVmFactory = registerVmFactory;
+        _authService             = authService;
+        _navigationService       = navigationService;
+        _registerVmFactory       = registerVmFactory;
         _forgotPasswordVmFactory = forgotPasswordVmFactory;
+        _marketplaceVmFactory    = marketplaceVmFactory;
         Title = "Iniciar sesión";
     }
 
@@ -51,11 +55,14 @@ public partial class LoginViewModel : BaseViewModel
         {
             await _authService.LoginAsync(new LoginRequest
             {
-                Email = Email,
+                Email    = Email,
                 Password = Password
             });
-            // Navegamos al dashboard principal después del login
-            // El MainViewModel se encarga de decidir qué vista mostrar
+
+            // Login exitoso; navegamos al Marketplace
+            var marketplaceVm = _marketplaceVmFactory();
+            await marketplaceVm.InitializeAsync();
+            _navigationService.NavigateTo(marketplaceVm);
         }
         catch (ApiException ex)
         {

@@ -42,16 +42,21 @@ public partial class App : Application
         // Servicios de la aplicación; Singleton para que persistan toda la sesión
         services.AddSingleton<NavigationService>();
         services.AddSingleton<AuthService>();
+        services.AddSingleton<MarketplaceService>();
 
         // MainViewModel es Singleton; es la raíz de la ventana, debe ser la misma instancia
         services.AddSingleton<MainViewModel>();
         services.AddTransient<LoginViewModel>();
         services.AddTransient<RegisterViewModel>();
         services.AddTransient<ForgotPasswordViewModel>();
+        services.AddTransient<MarketplaceViewModel>();
+        services.AddTransient<BookDetailViewModel>();
 
         // Factories para navegación entre ViewModels sin dependencias circulares
-        services.AddTransient<Func<LoginViewModel>>(sp => () => sp.GetRequiredService<LoginViewModel>());
-        services.AddTransient<Func<RegisterViewModel>>(sp => () => sp.GetRequiredService<RegisterViewModel>());
-        services.AddTransient<Func<ForgotPasswordViewModel>>(sp => () => sp.GetRequiredService<ForgotPasswordViewModel>());
+        services.AddTransient<Func<LoginViewModel>>(sp           => () => sp.GetRequiredService<LoginViewModel>());
+        services.AddTransient<Func<RegisterViewModel>>(sp        => () => sp.GetRequiredService<RegisterViewModel>());
+        services.AddTransient<Func<ForgotPasswordViewModel>>(sp  => () => sp.GetRequiredService<ForgotPasswordViewModel>());
+        services.AddTransient<Func<MarketplaceViewModel>>(sp     => () => sp.GetRequiredService<MarketplaceViewModel>());
+        services.AddTransient<Func<BookDetailViewModel>>(sp      => () => sp.GetRequiredService<BookDetailViewModel>());
     }
 }
