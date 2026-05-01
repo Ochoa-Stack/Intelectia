@@ -8,7 +8,7 @@ public class ApiClient
 {
     private readonly HttpClient _httpClient;
 
-    // Opciones de serialización — nombres de propiedades en camelCase como los devuelve la API
+    // Opciones de serialización; nombres de propiedades en camelCase como los devuelve la API
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -33,6 +33,15 @@ public class ApiClient
     {
         var response = await _httpClient.PostAsJsonAsync(endpoint, body, cancellationToken);
         await EnsureSuccessAsync(response);
+    }
+
+    // Hace un GET y deserializa la respuesta al tipo pedido
+    public async Task<T> GetAsync<T>(string endpoint, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.GetAsync(endpoint, cancellationToken);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
+            ?? throw new InvalidOperationException("La respuesta de la API estaba vacía.");
     }
 
     // Agrega el JWT a todas las peticiones que lo requieran

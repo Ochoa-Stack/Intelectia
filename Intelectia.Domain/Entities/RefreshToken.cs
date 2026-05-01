@@ -8,7 +8,7 @@ public class RefreshToken : BaseEntity
     public Guid UserId { get; set; }
     public User User { get; set; } = null!;
 
-    // El token en sí — se almacena hasheado en Paso 4
+    // El token en sí; se almacena hasheado
     public string Token { get; set; } = string.Empty;
 
     // Fecha en que deja de ser válido
@@ -20,6 +20,6 @@ public class RefreshToken : BaseEntity
     // Fecha en que fue revocado manualmente (logout)
     public DateTime? RevokedAt { get; set; }
 
-    // Indica si sigue siendo válido — propiedad calculada, sin setter ni columna en BD
+    // Indica si sigue siendo válido; propiedad calculada, sin setter ni columna en BD
     public bool IsActive => RevokedAt is null && UsedAt is null && DateTime.UtcNow < ExpiresAt;
 }
