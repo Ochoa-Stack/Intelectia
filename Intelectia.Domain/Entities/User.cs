@@ -46,4 +46,10 @@ public class User : BaseEntity
 
     // Reseñas escritas por este usuario
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
+
+    // Carrito activo del usuario; null hasta que agrega el primer item
+    public Cart? Cart { get; set; }
+
+    // Historial de pedidos del usuario
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
 }

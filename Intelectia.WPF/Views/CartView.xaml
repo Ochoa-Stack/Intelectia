@@ -1,0 +1,153 @@
+<UserControl x:Class="Intelectia.WPF.Views.CartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BackgroundBrush}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Padding="24,16" Background="{StaticResource SurfaceBrush}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="← Marketplace"
+                        Command="{Binding ContinueShoppingCommand}"
+                        Background="Transparent"
+                        Foreground="{StaticResource PrimaryBrush}"
+                        BorderThickness="0" Padding="0" Margin="0,0,24,0"/>
+                <TextBlock Text="{Binding Title}" Style="{StaticResource TextHeading}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Lista de items -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24">
+            <StackPanel>
+
+                <!-- Carrito vacío -->
+                <StackPanel HorizontalAlignment="Center" Margin="0,60"
+                            Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock Text="🛒" FontSize="48" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Tu carrito está vacío"
+                               Style="{StaticResource TextSubhead}"
+                               HorizontalAlignment="Center" Margin="0,16,0,8"/>
+                    <TextBlock Text="Agrega libros desde el catálogo para empezar."
+                               Style="{StaticResource TextCaption}"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center" Margin="0,0,0,24"/>
+                    <Button Content="Explorar el catálogo"
+                            Command="{Binding ContinueShoppingCommand}"
+                            Background="{StaticResource PrimaryBrush}"
+                            Foreground="{StaticResource TextPrimaryBrush}"
+                            BorderThickness="0" Padding="24,10"
+                            HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Items del carrito -->
+                <ItemsControl ItemsSource="{Binding Items}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource SurfaceBrush}"
+                                    CornerRadius="8" Padding="16" Margin="0,0,0,12">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Ícono del libro -->
+                                    <Border Grid.Column="0" Width="50" Height="65"
+                                            Background="{StaticResource SurfaceBrush}"
+                                            CornerRadius="4">
+                                        <TextBlock Text="📖" FontSize="24"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <!-- Datos del libro -->
+                                    <StackPanel Grid.Column="1" Margin="12,0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding BookTitle}"
+                                                   Style="{StaticResource TextBody}"
+                                                   FontWeight="SemiBold"
+                                                   TextWrapping="Wrap"/>
+                                        <TextBlock Text="{Binding BookAuthor}"
+                                                   Style="{StaticResource TextCaption}"
+                                                   Margin="0,4,0,0"/>
+                                        <TextBlock Text="{Binding Format}"
+                                                   Style="{StaticResource TextCaption}"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                                    </StackPanel>
+
+                                    <!-- Precio -->
+                                    <TextBlock Grid.Column="2"
+                                               Style="{StaticResource TextBody}"
+                                               FontWeight="Bold"
+                                               Foreground="{StaticResource PrimaryBrush}"
+                                               VerticalAlignment="Center"
+                                               Margin="16,0">
+                                        <Run Text="$"/>
+                                        <Run Text="{Binding PriceSnapshot, StringFormat='{}{0:F2}'}"/>
+                                    </TextBlock>
+
+                                    <!-- Botón eliminar -->
+                                    <Button Grid.Column="3"
+                                            Content="✕"
+                                            Command="{Binding DataContext.RemoveItemCommand,
+                                                RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}"
+                                            Background="Transparent"
+                                            Foreground="{StaticResource ErrorBrush}"
+                                            BorderThickness="0"
+                                            FontSize="16" Padding="8"
+                                            VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Mensaje de error -->
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="{StaticResource ErrorBrush}"
+                           Style="{StaticResource TextCaption}"
+                           Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}"
+                           Margin="0,8"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer — oculto cuando el carrito está vacío -->
+        <Border Grid.Row="2" Padding="24,16" Background="{StaticResource SurfaceBrush}"
+                Visibility="{Binding IsEmpty, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+            <Grid>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Total:" Style="{StaticResource TextSubhead}"
+                               VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <TextBlock Style="{StaticResource TextSubhead}"
+                               Foreground="{StaticResource PrimaryBrush}"
+                               VerticalAlignment="Center">
+                        <Run Text="$"/>
+                        <Run Text="{Binding Total, StringFormat='{}{0:F2}'}"/>
+                    </TextBlock>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Seguir comprando"
+                            Command="{Binding ContinueShoppingCommand}"
+                            Background="Transparent"
+                            Foreground="{StaticResource TextSecondaryBrush}"
+                            BorderThickness="0" Padding="16,10" Margin="0,0,8,0"/>
+                    <Button Content="Proceder al pago →"
+                            Command="{Binding ProceedToCheckoutCommand}"
+                            Background="{StaticResource PrimaryBrush}"
+                            Foreground="{StaticResource TextPrimaryBrush}"
+                            BorderThickness="0" Padding="24,10"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

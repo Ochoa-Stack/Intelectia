@@ -8,7 +8,7 @@ public class ApiClient
 {
     private readonly HttpClient _httpClient;
 
-    // Opciones de serialización; nombres de propiedades en camelCase como los devuelve la API
+    // Opciones de deserialización; nombres de propiedades en camelCase como los devuelve la API
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -19,23 +19,7 @@ public class ApiClient
         _httpClient = httpClient;
     }
 
-    // Hace un POST y deserializa la respuesta al tipo pedido
-    public async Task<T> PostAsync<T>(string endpoint, object body, CancellationToken cancellationToken = default)
-    {
-        var response = await _httpClient.PostAsJsonAsync(endpoint, body, cancellationToken);
-        await EnsureSuccessAsync(response);
-        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
-            ?? throw new InvalidOperationException("La respuesta de la API estaba vacía.");
-    }
-
-    // Hace un POST que no devuelve cuerpo (como logout)
-    public async Task PostAsync(string endpoint, object body, CancellationToken cancellationToken = default)
-    {
-        var response = await _httpClient.PostAsJsonAsync(endpoint, body, cancellationToken);
-        await EnsureSuccessAsync(response);
-    }
-
-    // Hace un GET y deserializa la respuesta al tipo pedido
+    // Hace un GET y deserializa la respuesta
     public async Task<T> GetAsync<T>(string endpoint, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.GetAsync(endpoint, cancellationToken);
@@ -44,26 +28,51 @@ public class ApiClient
             ?? throw new InvalidOperationException("La respuesta de la API estaba vacía.");
     }
 
-    // Agrega el JWT a todas las peticiones que lo requieran
-    public void SetAuthorizationToken(string token)
-        => _httpClient.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+    // Hace un POST y deserializa la respuesta al tipo pedido
+    public async Task<T> PostAsync<T>(
+        string endpoint, object body, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PostAsJsonAsync(endpoint, body, cancellationToken);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
+            ?? throw new InvalidOperationException("La respuesta de la API estaba vacía.");
+    }
 
-    // Limpia el token al hacer logout
-    public void ClearAuthorizationToken()
-        => _httpClient.DefaultRequestHeaders.Authorization = null;
+    // Hace un POST sin devolver cuerpo
+    public async Task PostAsync(
+        string endpoint, object body, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PostAsJsonAsync(endpoint, body, cancellationToken);
+        await EnsureSuccessAsync(response);
+    }
 
-    // Lee el mensaje de error que devuelve la API y lo lanza como excepción
+    // Hace un DELETE y deserializa la respuesta
+    public async Task<T> DeleteAsync<T>(
+        string endpoint, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.DeleteAsync(endpoint, cancellationToken);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken)
+            ?? throw new InvalidOperationException("La respuesta de la API estaba vacía.");
+    }
+
+    // Hace un PUT sin devolver cuerpo
+    public async Task PutAsync(
+        string endpoint, object body, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PutAsJsonAsync(endpoint, body, cancellationToken);
+        await EnsureSuccessAsync(response);
+    }
+
+    // Lee el mensaje de error estructurado que devuelve GlobalExceptionMiddleware
     private static async Task EnsureSuccessAsync(HttpResponseMessage response)
     {
-        if (response.IsSuccessStatusCode)
-            return;
+        if (response.IsSuccessStatusCode) return;
 
         var content = await response.Content.ReadAsStringAsync();
 
         try
         {
-            // Intentamos leer el mensaje estructurado que devuelve GlobalExceptionMiddleware
             using var doc = JsonDocument.Parse(content);
             var message = doc.RootElement
                 .GetProperty("message")
@@ -72,7 +81,7 @@ public class ApiClient
         }
         catch (JsonException)
         {
-            // Si no tiene el formato esperado, lanzamos el contenido crudo
+            // Si el body no es JSON estructurado lo usamos como mensaje crudo
             throw new ApiException(content, (int)response.StatusCode);
         }
     }

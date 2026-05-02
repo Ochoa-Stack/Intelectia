@@ -106,14 +106,19 @@
                                        Style="{StaticResource TextBody}"/>
                         </Grid>
 
-                        <!-- Botón de compra — activo en Fase 4 -->
-                        <Button Content="Agregar al carrito"
+                        <!-- Botón agregar al carrito -->
+                        <Button Content="Agregar al carrito 🛒"
+                                Command="{Binding AddToCartCommand}"
                                 Background="{StaticResource PrimaryBrush}"
                                 Foreground="{StaticResource TextPrimaryBrush}"
                                 BorderThickness="0" Padding="24,12"
-                                HorizontalAlignment="Left" IsEnabled="False"/>
-                        <TextBlock Text="La compra estará disponible próximamente."
-                                   Style="{StaticResource TextCaption}" Margin="0,4,0,0"/>
+                                HorizontalAlignment="Left"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Style="{StaticResource TextCaption}"
+                                   Foreground="{StaticResource ErrorBrush}"
+                                   Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}"
+                                   Margin="0,4,0,0"/>
                     </StackPanel>
                 </Grid>
 

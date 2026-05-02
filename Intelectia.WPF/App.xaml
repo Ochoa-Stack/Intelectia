@@ -13,11 +13,13 @@
                 <ResourceDictionary Source="Themes/Typography.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Converters disponibles en todas las vistas -->
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <!-- Converters -->
+            <converters:BoolToVisibilityConverter          x:Key="BoolToVisibilityConverter"/>
+            <converters:NullToVisibilityConverter          x:Key="NullToVisibilityConverter"/>
+            <converters:InverseBoolToVisibilityConverter   x:Key="InverseBoolToVisibilityConverter"/>
+            <converters:InverseBoolConverter               x:Key="InverseBoolConverter"/>
 
-            <!-- DataTemplates de auth -->
+            <!-- DataTemplates Auth -->
             <DataTemplate DataType="{x:Type authVm:LoginViewModel}">
                 <authV:LoginView/>
             </DataTemplate>
@@ -28,12 +30,23 @@
                 <authV:ForgotPasswordView/>
             </DataTemplate>
 
-            <!-- DataTemplates del Marketplace -->
+            <!-- DataTemplates Marketplace -->
             <DataTemplate DataType="{x:Type vm:MarketplaceViewModel}">
                 <v:MarketplaceView/>
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:BookDetailViewModel}">
                 <v:BookDetailView/>
+            </DataTemplate>
+
+            <!-- DataTemplates Comercio -->
+            <DataTemplate DataType="{x:Type vm:CartViewModel}">
+                <v:CartView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:CheckoutViewModel}">
+                <v:CheckoutView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:OrderHistoryViewModel}">
+                <v:OrderHistoryView/>
             </DataTemplate>
 
         </ResourceDictionary>
