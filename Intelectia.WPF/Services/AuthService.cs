@@ -4,31 +4,35 @@ namespace Intelectia.WPF.Services;
 
 public class AuthService
 {
-    private readonly ApiClient _apiClient;
+    private readonly ApiClient  _apiClient;
+    private readonly TokenStore _tokenStore;
 
-    // Guardamos la sesión en memoria mientras la app está abierta
+    // Sesión activa en memoria; null si no hay login
     public AuthResponseDto? CurrentSession { get; private set; }
-
-    // Propiedad de conveniencia para saber si hay sesión activa
     public bool IsAuthenticated => CurrentSession is not null;
 
-    public AuthService(ApiClient apiClient)
+    public AuthService(ApiClient apiClient, TokenStore tokenStore)
     {
-        _apiClient = apiClient;
+        _apiClient  = apiClient;
+        _tokenStore = tokenStore;
     }
 
-    // Registra un usuario nuevo y guarda la sesión recibida
-    public async Task<AuthResponseDto> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
+    // Registra un usuario nuevo y persiste la sesión
+    public async Task<AuthResponseDto> RegisterAsync(
+        RegisterRequest request, CancellationToken cancellationToken = default)
     {
-        var response = await _apiClient.PostAsync<AuthResponseDto>("api/auth/register", request, cancellationToken);
+        var response = await _apiClient.PostAsync<AuthResponseDto>(
+            "api/auth/register", request, cancellationToken);
         SetSession(response);
         return response;
     }
 
-    // Autentica al usuario y guarda la sesión
-    public async Task<AuthResponseDto> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
+    // Autentica al usuario y persiste la sesión
+    public async Task<AuthResponseDto> LoginAsync(
+        LoginRequest request, CancellationToken cancellationToken = default)
     {
-        var response = await _apiClient.PostAsync<AuthResponseDto>("api/auth/login", request, cancellationToken);
+        var response = await _apiClient.PostAsync<AuthResponseDto>(
+            "api/auth/login", request, cancellationToken);
         SetSession(response);
         return response;
     }
@@ -36,8 +40,7 @@ public class AuthService
     // Renueva el JWT usando el refresh token guardado
     public async Task<bool> RefreshSessionAsync(CancellationToken cancellationToken = default)
     {
-        if (CurrentSession is null)
-            return false;
+        if (CurrentSession is null) return false;
 
         try
         {
@@ -50,7 +53,7 @@ public class AuthService
         }
         catch
         {
-            // Si el refresh falla cerramos la sesión localmente
+            // Refresh fallido; cerramos la sesión localmente
             ClearSession();
             return false;
         }
@@ -59,8 +62,7 @@ public class AuthService
     // Revoca el refresh token en el servidor y limpia la sesión local
     public async Task LogoutAsync(CancellationToken cancellationToken = default)
     {
-        if (CurrentSession is null)
-            return;
+        if (CurrentSession is null) return;
 
         try
         {
@@ -71,28 +73,33 @@ public class AuthService
         }
         finally
         {
-            // Limpiamos la sesión local sin importar si el servidor respondió bien
+            // Limpiamos la sesión local sin importar si el servidor respondió
             ClearSession();
         }
     }
 
-    public async Task ForgotPasswordAsync(string email, CancellationToken cancellationToken = default)
-        => await _apiClient.PostAsync("api/auth/forgot-password", new ForgotPasswordRequest { Email = email }, cancellationToken);
+    public async Task ForgotPasswordAsync(
+        string email, CancellationToken cancellationToken = default)
+        => await _apiClient.PostAsync(
+            "api/auth/forgot-password",
+            new ForgotPasswordRequest { Email = email },
+            cancellationToken);
 
-    public async Task ResetPasswordAsync(ResetPasswordRequest request, CancellationToken cancellationToken = default)
+    public async Task ResetPasswordAsync(
+        ResetPasswordRequest request, CancellationToken cancellationToken = default)
         => await _apiClient.PostAsync("api/auth/reset-password", request, cancellationToken);
 
-    // Guarda la sesión y pone el token en el HttpClient para peticiones futuras
+    // Guarda la sesión y escribe el token en el TokenStore compartido; AuthTokenHandler lo leerá automáticamente en cada petición subsecuente
     private void SetSession(AuthResponseDto session)
     {
-        CurrentSession = session;
-        _apiClient.SetAuthorizationToken(session.AccessToken);
+        CurrentSession          = session;
+        _tokenStore.AccessToken = session.AccessToken;
     }
 
-    // Borra la sesión y quita el token del HttpClient
+    // Borra la sesión y elimina el token del TokenStore
     private void ClearSession()
     {
-        CurrentSession = null;
-        _apiClient.ClearAuthorizationToken();
+        CurrentSession          = null;
+        _tokenStore.AccessToken = null;
     }
 }

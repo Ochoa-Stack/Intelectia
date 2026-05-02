@@ -14,5 +14,12 @@ public interface IApplicationDbContext
     DbSet<Review> Reviews { get; }
     DbSet<UserBook> UserBooks { get; }
 
+    // Tablas de Comercio
+    DbSet<Cart> Carts { get; }
+    DbSet<CartItem> CartItems { get; }
+    DbSet<Order> Orders { get; }
+    DbSet<OrderItem> OrderItems { get; }
+    DbSet<Payment> Payments { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

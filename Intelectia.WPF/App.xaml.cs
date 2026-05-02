@@ -19,12 +19,8 @@ public partial class App : Application
         Services = services.BuildServiceProvider();
 
         var mainViewModel = Services.GetRequiredService<MainViewModel>();
-
-        // Inicializamos el NavigationService con el MainViewModel
-        var navigation = Services.GetRequiredService<NavigationService>();
+        var navigation    = Services.GetRequiredService<NavigationService>();
         navigation.Initialize(mainViewModel);
-
-        // Navegamos a login como primera pantalla
         navigation.NavigateTo(Services.GetRequiredService<LoginViewModel>());
 
         var mainWindow = new MainWindow { DataContext = mainViewModel };
@@ -33,30 +29,44 @@ public partial class App : Application
 
     private static void ConfigureServices(IServiceCollection services)
     {
-        // HttpClient apuntando a la API
+        // TokenStore Singleton; almacén compartido del JWT activo entre todos los servicios
+        services.AddSingleton<TokenStore>();
+
+        // Handler que inyecta el token en cada petición HTTP saliente
+        services.AddTransient<AuthTokenHandler>();
+
+        // HttpClient con el handler de autenticación; resuelve el problema de instancias múltiples
         services.AddHttpClient<ApiClient>(client =>
         {
             client.BaseAddress = new Uri("http://localhost:5028/");
-        });
+        })
+        .AddHttpMessageHandler<AuthTokenHandler>();
 
-        // Servicios de la aplicación; Singleton para que persistan toda la sesión
+        // Servicios Singleton; persisten toda la sesión
         services.AddSingleton<NavigationService>();
         services.AddSingleton<AuthService>();
         services.AddSingleton<MarketplaceService>();
+        services.AddSingleton<CommerceService>();
 
-        // MainViewModel es Singleton; es la raíz de la ventana, debe ser la misma instancia
+        // ViewModels
         services.AddSingleton<MainViewModel>();
         services.AddTransient<LoginViewModel>();
         services.AddTransient<RegisterViewModel>();
         services.AddTransient<ForgotPasswordViewModel>();
         services.AddTransient<MarketplaceViewModel>();
         services.AddTransient<BookDetailViewModel>();
+        services.AddTransient<CartViewModel>();
+        services.AddTransient<CheckoutViewModel>();
+        services.AddTransient<OrderHistoryViewModel>();
 
-        // Factories para navegación entre ViewModels sin dependencias circulares
+        // Factories para navegación sin dependencias circulares
         services.AddTransient<Func<LoginViewModel>>(sp           => () => sp.GetRequiredService<LoginViewModel>());
         services.AddTransient<Func<RegisterViewModel>>(sp        => () => sp.GetRequiredService<RegisterViewModel>());
         services.AddTransient<Func<ForgotPasswordViewModel>>(sp  => () => sp.GetRequiredService<ForgotPasswordViewModel>());
         services.AddTransient<Func<MarketplaceViewModel>>(sp     => () => sp.GetRequiredService<MarketplaceViewModel>());
         services.AddTransient<Func<BookDetailViewModel>>(sp      => () => sp.GetRequiredService<BookDetailViewModel>());
+        services.AddTransient<Func<CartViewModel>>(sp            => () => sp.GetRequiredService<CartViewModel>());
+        services.AddTransient<Func<CheckoutViewModel>>(sp        => () => sp.GetRequiredService<CheckoutViewModel>());
+        services.AddTransient<Func<OrderHistoryViewModel>>(sp    => () => sp.GetRequiredService<OrderHistoryViewModel>());
     }
 }

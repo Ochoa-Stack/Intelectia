@@ -37,10 +37,15 @@ public static class DependencyInjection
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
 
+        // Registramos los repositorios de Comercio
+        services.AddScoped<ICartRepository, CartRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+
         // Registramos los servicios de infraestructura
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IPaymentService, PaymentService>();
 
         // Registramos el seeder como servicio con acceso al contexto
         services.AddScoped<DatabaseSeeder>();
