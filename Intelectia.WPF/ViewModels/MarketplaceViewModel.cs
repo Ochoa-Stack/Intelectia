@@ -11,8 +11,11 @@ public partial class MarketplaceViewModel : BaseViewModel
 {
     private readonly MarketplaceService _marketplaceService;
     private readonly NavigationService _navigationService;
+    private readonly AuthService _authService;
     private readonly Func<BookDetailViewModel> _bookDetailVmFactory;
     private readonly Func<LibraryViewModel> _libraryVmFactory;
+    private readonly Func<VendorDashboardViewModel> _vendorVmFactory;
+    private readonly Func<VendorOnboardingViewModel> _vendorOnboardingVmFactory;
 
     // Lista de libros que se muestran en el grid
     public ObservableCollection<BookSummaryDto> Books { get; } = new();
@@ -44,13 +47,19 @@ public partial class MarketplaceViewModel : BaseViewModel
     public MarketplaceViewModel(
         MarketplaceService marketplaceService,
         NavigationService navigationService,
+        AuthService authService,
         Func<BookDetailViewModel> bookDetailVmFactory,
-        Func<LibraryViewModel> libraryVmFactory)
+        Func<LibraryViewModel> libraryVmFactory,
+        Func<VendorDashboardViewModel> vendorVmFactory,
+        Func<VendorOnboardingViewModel> vendorOnboardingVmFactory)
     {
-        _marketplaceService  = marketplaceService;
-        _navigationService   = navigationService;
-        _bookDetailVmFactory = bookDetailVmFactory;
-        _libraryVmFactory    = libraryVmFactory;
+        _marketplaceService        = marketplaceService;
+        _navigationService         = navigationService;
+        _authService               = authService;
+        _bookDetailVmFactory       = bookDetailVmFactory;
+        _libraryVmFactory          = libraryVmFactory;
+        _vendorVmFactory           = vendorVmFactory;
+        _vendorOnboardingVmFactory = vendorOnboardingVmFactory;
         Title = "Marketplace";
     }
 
@@ -163,6 +172,26 @@ public partial class MarketplaceViewModel : BaseViewModel
     private async Task GoToLibraryAsync()
     {
         var vm = _libraryVmFactory();
+        await vm.InitializeAsync();
+        _navigationService.NavigateTo(vm);
+    }
+
+    // Comando actualizado; detecta si tiene perfil antes de navegar
+    [RelayCommand]
+    private async Task GoToVendorDashboardAsync()
+    {
+        // Leemos el estado del perfil de vendedor desde la sesión activa
+        var isVendor = _authService.CurrentSession?.User.IsVendor ?? false;
+
+        if (!isVendor)
+        {
+            // Sin perfil -> pantalla de activación
+            _navigationService.NavigateTo(_vendorOnboardingVmFactory());
+            return;
+        }
+
+        // Con perfil -> dashboard directo
+        var vm = _vendorVmFactory();
         await vm.InitializeAsync();
         _navigationService.NavigateTo(vm);
     }

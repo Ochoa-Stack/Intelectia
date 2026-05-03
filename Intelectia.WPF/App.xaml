@@ -54,6 +54,14 @@
                 <v:LibraryView/>
             </DataTemplate>
 
+            <!-- DataTemplate Vendedor -->
+            <DataTemplate DataType="{x:Type vm:VendorDashboardViewModel}">
+                <v:VendorDashboardView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:VendorOnboardingViewModel}">
+                <v:VendorOnboardingView/>
+            </DataTemplate>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>
