@@ -2,6 +2,7 @@ using AutoMapper;
 using Intelectia.Domain.Entities;
 using Intelectia.Shared.DTOs.Auth;
 using Intelectia.Shared.DTOs.Commerce;
+using Intelectia.Shared.DTOs.Library;
 using Intelectia.Shared.DTOs.Marketplace;
 
 namespace Intelectia.Application.Mappings;
@@ -53,5 +54,20 @@ public class MappingProfile : Profile
                 o => o.MapFrom(s => s.Status.ToString()))
             .ForMember(d => d.StripePaymentIntentId,
                 o => o.MapFrom(s => s.Payment != null ? s.Payment.StripePaymentIntentId : null));
+
+        // Biblioteca personal
+        CreateMap<UserBook, UserBookDto>()
+            .ForMember(d => d.Title,         o => o.MapFrom(s => s.Book.Title))
+            .ForMember(d => d.Author,        o => o.MapFrom(s => s.Book.Author))
+            .ForMember(d => d.CoverImageUrl, o => o.MapFrom(s => s.Book.CoverImageUrl))
+            .ForMember(d => d.Format,         o => o.MapFrom(s => s.Book.Format.ToString()))
+            .ForMember(d => d.CategoryName,  o => o.MapFrom(s => s.Book.Category.Name));
+
+        // Herramientas de estudio
+        CreateMap<Note, NoteDto>();
+
+        CreateMap<Citation, CitationDto>()
+            .ForMember(d => d.BookTitle, o => o.MapFrom(s => s.Book.Title))
+            .ForMember(d => d.Format,    o => o.MapFrom(s => s.Format.ToString()));
     }
 }

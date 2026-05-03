@@ -21,5 +21,10 @@ public interface IApplicationDbContext
     DbSet<OrderItem> OrderItems { get; }
     DbSet<Payment> Payments { get; }
 
+    // Herramientas de estudio
+    DbSet<Note> Notes { get; }
+    DbSet<Citation> Citations { get; }
+    DbSet<TranslationHistory> TranslationHistories { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

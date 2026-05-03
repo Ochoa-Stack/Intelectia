@@ -12,6 +12,7 @@ public partial class MarketplaceViewModel : BaseViewModel
     private readonly MarketplaceService _marketplaceService;
     private readonly NavigationService _navigationService;
     private readonly Func<BookDetailViewModel> _bookDetailVmFactory;
+    private readonly Func<LibraryViewModel> _libraryVmFactory;
 
     // Lista de libros que se muestran en el grid
     public ObservableCollection<BookSummaryDto> Books { get; } = new();
@@ -19,30 +20,17 @@ public partial class MarketplaceViewModel : BaseViewModel
     // Lista de categorías para el panel de filtros
     public ObservableCollection<CategoryDto> Categories { get; } = new();
 
-    [ObservableProperty]
-    private string _searchText = string.Empty;
+    [ObservableProperty] private string _searchText       = string.Empty;
+    [ObservableProperty] private CategoryDto? _selectedCategory;
+    [ObservableProperty] private string _selectedSortBy   = "newest";
+    [ObservableProperty] private int _currentPage         = 1;
+    [ObservableProperty] private int _totalPages          = 1;
+    [ObservableProperty] private int _totalCount          = 0;
+    [ObservableProperty] private string _errorMessage     = string.Empty;
 
-    [ObservableProperty]
-    private CategoryDto? _selectedCategory;
-
-    [ObservableProperty]
-    private string _selectedSortBy = "newest";
-
-    [ObservableProperty]
-    private int _currentPage = 1;
-
-    [ObservableProperty]
-    private int _totalPages = 1;
-
-    [ObservableProperty]
-    private int _totalCount = 0;
-
-    [ObservableProperty]
-    private string _errorMessage = string.Empty;
-
-    public bool HasError          => !string.IsNullOrEmpty(ErrorMessage);
-    public bool HasPreviousPage   => CurrentPage > 1;
-    public bool HasNextPage       => CurrentPage < TotalPages;
+    public bool HasError        => !string.IsNullOrEmpty(ErrorMessage);
+    public bool HasPreviousPage => CurrentPage > 1;
+    public bool HasNextPage     => CurrentPage < TotalPages;
 
     // Opciones de ordenamiento para el ComboBox
     public List<(string Key, string Label)> SortOptions { get; } = new()
@@ -56,11 +44,13 @@ public partial class MarketplaceViewModel : BaseViewModel
     public MarketplaceViewModel(
         MarketplaceService marketplaceService,
         NavigationService navigationService,
-        Func<BookDetailViewModel> bookDetailVmFactory)
+        Func<BookDetailViewModel> bookDetailVmFactory,
+        Func<LibraryViewModel> libraryVmFactory)
     {
         _marketplaceService  = marketplaceService;
         _navigationService   = navigationService;
         _bookDetailVmFactory = bookDetailVmFactory;
+        _libraryVmFactory    = libraryVmFactory;
         Title = "Marketplace";
     }
 
@@ -165,6 +155,15 @@ public partial class MarketplaceViewModel : BaseViewModel
     {
         var vm = _bookDetailVmFactory();
         await vm.LoadAsync(book.Id);
+        _navigationService.NavigateTo(vm);
+    }
+
+    // Navega a la biblioteca personal del usuario
+    [RelayCommand]
+    private async Task GoToLibraryAsync()
+    {
+        var vm = _libraryVmFactory();
+        await vm.InitializeAsync();
         _navigationService.NavigateTo(vm);
     }
 

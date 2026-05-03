@@ -52,4 +52,13 @@ public class User : BaseEntity
 
     // Historial de pedidos del usuario
     public ICollection<Order> Orders { get; set; } = new List<Order>();
+
+    // Notas tomadas por el usuario (generales y por libro)
+    public ICollection<Note> Notes { get; set; } = new List<Note>();
+
+    // Citas bibliográficas generadas por el usuario
+    public ICollection<Citation> Citations { get; set; } = new List<Citation>();
+
+    // Historial de traducciones del usuario
+    public ICollection<TranslationHistory> TranslationHistories { get; set; } = new List<TranslationHistory>();
 }

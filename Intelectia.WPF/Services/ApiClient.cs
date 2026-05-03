@@ -56,6 +56,13 @@ public class ApiClient
             ?? throw new InvalidOperationException("La respuesta de la API estaba vacía.");
     }
 
+    // Hace un DELETE sin devolver cuerpo; para endpoints que responden 204 No Content
+    public async Task DeleteAsync(string endpoint, CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.DeleteAsync(endpoint, cancellationToken);
+        await EnsureSuccessAsync(response);
+    }
+
     // Hace un PUT sin devolver cuerpo
     public async Task PutAsync(
         string endpoint, object body, CancellationToken cancellationToken = default)

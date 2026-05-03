@@ -47,6 +47,7 @@ public partial class App : Application
         services.AddSingleton<AuthService>();
         services.AddSingleton<MarketplaceService>();
         services.AddSingleton<CommerceService>();
+        services.AddSingleton<LibraryService>();
 
         // ViewModels
         services.AddSingleton<MainViewModel>();
@@ -58,6 +59,7 @@ public partial class App : Application
         services.AddTransient<CartViewModel>();
         services.AddTransient<CheckoutViewModel>();
         services.AddTransient<OrderHistoryViewModel>();
+        services.AddTransient<LibraryViewModel>();
 
         // Factories para navegación sin dependencias circulares
         services.AddTransient<Func<LoginViewModel>>(sp           => () => sp.GetRequiredService<LoginViewModel>());
@@ -68,5 +70,6 @@ public partial class App : Application
         services.AddTransient<Func<CartViewModel>>(sp            => () => sp.GetRequiredService<CartViewModel>());
         services.AddTransient<Func<CheckoutViewModel>>(sp        => () => sp.GetRequiredService<CheckoutViewModel>());
         services.AddTransient<Func<OrderHistoryViewModel>>(sp    => () => sp.GetRequiredService<OrderHistoryViewModel>());
+        services.AddTransient<Func<LibraryViewModel>>(sp         => () => sp.GetRequiredService<LibraryViewModel>());
     }
 }
