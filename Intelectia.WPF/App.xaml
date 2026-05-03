@@ -49,6 +49,11 @@
                 <v:OrderHistoryView/>
             </DataTemplate>
 
+            <!-- DataTemplate Biblioteca -->
+            <DataTemplate DataType="{x:Type vm:LibraryViewModel}">
+                <v:LibraryView/>
+            </DataTemplate>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

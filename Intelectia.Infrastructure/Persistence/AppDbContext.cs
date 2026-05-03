@@ -28,6 +28,11 @@ public class AppDbContext : DbContext, IApplicationDbContext
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<Payment> Payments => Set<Payment>();
 
+    // Tablas de Herramientas de Estudio
+    public DbSet<Note> Notes => Set<Note>();
+    public DbSet<Citation> Citations => Set<Citation>();
+    public DbSet<TranslationHistory> TranslationHistories => Set<TranslationHistory>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Aplica todas las configuraciones del ensamblado automáticamente

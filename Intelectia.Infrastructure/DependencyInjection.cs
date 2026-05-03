@@ -41,11 +41,16 @@ public static class DependencyInjection
         services.AddScoped<ICartRepository, CartRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
 
+        // Registramos los repositorios de Herramientas de Estudio
+        services.AddScoped<INoteRepository, NoteRepository>();
+        services.AddScoped<ICitationRepository, CitationRepository>();
+
         // Registramos los servicios de infraestructura
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<ITranslationService, DeepLTranslationService>();
 
         // Registramos el seeder como servicio con acceso al contexto
         services.AddScoped<DatabaseSeeder>();
