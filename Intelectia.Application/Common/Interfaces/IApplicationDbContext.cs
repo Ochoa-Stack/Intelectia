@@ -5,8 +5,10 @@ namespace Intelectia.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {
-    // Tablas de auth
+    // Tablas de auth y perfiles
     DbSet<RefreshToken> RefreshTokens { get; }
+    DbSet<User> Users { get; }
+    DbSet<VendorProfile> VendorProfiles { get; }
 
     // Tablas del Marketplace
     DbSet<Book> Books { get; }
