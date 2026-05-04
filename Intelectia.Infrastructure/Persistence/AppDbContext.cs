@@ -33,6 +33,11 @@ public class AppDbContext : DbContext, IApplicationDbContext
     public DbSet<Citation> Citations => Set<Citation>();
     public DbSet<TranslationHistory> TranslationHistories => Set<TranslationHistory>();
 
+    // Grupos de estudio
+    public DbSet<StudyGroup> StudyGroups => Set<StudyGroup>();
+    public DbSet<GroupMember> GroupMembers => Set<GroupMember>();
+    public DbSet<GroupMessage> GroupMessages => Set<GroupMessage>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Aplica todas las configuraciones del ensamblado automáticamente

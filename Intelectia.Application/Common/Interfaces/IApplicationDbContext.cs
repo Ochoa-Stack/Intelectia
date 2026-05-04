@@ -28,5 +28,10 @@ public interface IApplicationDbContext
     DbSet<Citation> Citations { get; }
     DbSet<TranslationHistory> TranslationHistories { get; }
 
+    // Grupos de Estudio
+    DbSet<StudyGroup> StudyGroups { get; }
+    DbSet<GroupMember> GroupMembers { get; }
+    DbSet<GroupMessage> GroupMessages { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

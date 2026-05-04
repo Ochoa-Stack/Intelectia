@@ -98,6 +98,14 @@
                         <TextBlock Text="Cargando..." Style="{StaticResource TextCaption}"
                                    VerticalAlignment="Center" Margin="0,0,16,0"
                                    Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        <Button Content="👥 Grupos"
+                                Command="{Binding GoToGroupsCommand}"
+                                Background="Transparent"
+                                Foreground="{StaticResource TextSecondaryBrush}"
+                                BorderThickness="0" Padding="0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Margin="0,0,16,0"/>
                         <Button Content="🏪 Mi Tienda"
                                 Command="{Binding GoToVendorDashboardCommand}"
                                 Background="Transparent"
