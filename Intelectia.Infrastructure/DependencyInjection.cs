@@ -45,6 +45,10 @@ public static class DependencyInjection
         services.AddScoped<INoteRepository, NoteRepository>();
         services.AddScoped<ICitationRepository, CitationRepository>();
 
+        // Repositorios de grupos
+        services.AddScoped<IGroupRepository, GroupRepository>();
+        services.AddScoped<IGroupMessageRepository, GroupMessageRepository>();
+
         // Registramos los servicios de infraestructura
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();

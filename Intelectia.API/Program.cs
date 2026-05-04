@@ -39,6 +39,9 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+// Registramos SignalR para el chat en tiempo real
+builder.Services.AddSignalR();
+
 // Servicios base para controladores y exploración de endpoints (API)
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -102,5 +105,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHealthChecks("/health");
+
+// Mapeamos el Hub de chat
+app.MapHub<Intelectia.API.Hubs.ChatHub>("/hubs/chat");
 
 app.Run();

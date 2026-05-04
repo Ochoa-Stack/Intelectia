@@ -61,6 +61,12 @@
             <DataTemplate DataType="{x:Type vm:VendorOnboardingViewModel}">
                 <v:VendorOnboardingView/>
             </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:GroupsViewModel}">
+                <v:GroupsView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:GroupChatViewModel}">
+                <v:GroupChatView/>
+            </DataTemplate>
 
         </ResourceDictionary>
     </Application.Resources>

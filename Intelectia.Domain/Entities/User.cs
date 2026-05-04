@@ -61,4 +61,13 @@ public class User : BaseEntity
 
     // Historial de traducciones del usuario
     public ICollection<TranslationHistory> TranslationHistories { get; set; } = new List<TranslationHistory>();
+
+    // Grupos que creó el usuario
+    public ICollection<StudyGroup> CreatedGroups { get; set; } = new List<StudyGroup>();
+
+    // Membresías del usuario en grupos de estudio
+    public ICollection<GroupMember> GroupMemberships { get; set; } = new List<GroupMember>();
+
+    // Mensajes enviados por el usuario en grupos
+    public ICollection<GroupMessage> GroupMessages { get; set; } = new List<GroupMessage>();
 }

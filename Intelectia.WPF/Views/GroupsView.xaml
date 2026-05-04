@@ -1,0 +1,217 @@
+<UserControl x:Class="Intelectia.WPF.Views.GroupsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BackgroundBrush}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Padding="24,16" Background="{StaticResource SurfaceBrush}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="← Marketplace"
+                        Command="{Binding GoToMarketplaceCommand}"
+                        Background="Transparent" Foreground="{StaticResource PrimaryBrush}"
+                        BorderThickness="0" Padding="0" Margin="0,0,24,0"/>
+                <TextBlock Text="Grupos de Estudio"
+                           Style="{StaticResource TextHeading}"
+                           VerticalAlignment="Center"/>
+                <Button Content="+ Crear grupo"
+                        Command="{Binding ToggleCreateFormCommand}"
+                        Background="{StaticResource PrimaryBrush}"
+                        Foreground="{StaticResource TextPrimaryBrush}"
+                        BorderThickness="0" Padding="12,6"
+                        HorizontalAlignment="Right" Margin="24,0,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Tabs -->
+        <Border Grid.Row="1" Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" Margin="24,0">
+                <Button Content="👥 Mis Grupos"
+                        Command="{Binding SwitchTabCommand}" CommandParameter="my"
+                        Background="Transparent" BorderThickness="0,0,0,2"
+                        Padding="0,12" Margin="0,0,24,0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsMyTab}" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="🔍 Explorar"
+                        Command="{Binding SwitchTabCommand}" CommandParameter="explore"
+                        Background="Transparent" BorderThickness="0,0,0,2" Padding="0,12">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsExploreTab}" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Padding="24">
+            <StackPanel>
+
+                <!-- Formulario crear grupo -->
+                <Border Background="{StaticResource SurfaceBrush}"
+                        CornerRadius="8" Padding="16" Margin="0,0,0,16"
+                        Visibility="{Binding ShowCreateForm, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <StackPanel>
+                        <TextBlock Text="Nuevo grupo" Style="{StaticResource TextSubhead}" Margin="0,0,0,12"/>
+
+                        <TextBlock Text="Nombre" Style="{StaticResource TextCaption}" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding NewGroupName, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{StaticResource SurfaceLightBrush}"
+                                 Foreground="{StaticResource TextPrimaryBrush}"
+                                 BorderBrush="{StaticResource BorderBrush}"
+                                 Padding="10,8" BorderThickness="1" Margin="0,0,0,12"/>
+
+                        <TextBlock Text="Descripción (opcional)" Style="{StaticResource TextCaption}" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding NewGroupDescription, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{StaticResource SurfaceLightBrush}"
+                                 Foreground="{StaticResource TextPrimaryBrush}"
+                                 BorderBrush="{StaticResource BorderBrush}"
+                                 Padding="10,8" BorderThickness="1" Margin="0,0,0,12"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <CheckBox IsChecked="{Binding NewGroupIsPublic}"
+                                      Foreground="{StaticResource TextPrimaryBrush}"
+                                      Content="Grupo público"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Crear"
+                                    Command="{Binding CreateGroupCommand}"
+                                    Background="{StaticResource PrimaryBrush}"
+                                    Foreground="{StaticResource TextPrimaryBrush}"
+                                    BorderThickness="0" Padding="16,8" Margin="0,0,8,0"/>
+                            <Button Content="Cancelar"
+                                    Command="{Binding ToggleCreateFormCommand}"
+                                    Background="Transparent"
+                                    Foreground="{StaticResource TextSecondaryBrush}"
+                                    BorderThickness="0" Padding="16,8"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Tab: Mis grupos -->
+                <ItemsControl ItemsSource="{Binding MyGroups}"
+                              Visibility="{Binding IsMyTab, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource SurfaceBrush}"
+                                    CornerRadius="8" Padding="16" Margin="0,0,0,12"
+                                    Cursor="Hand">
+                                <Border.InputBindings>
+                                    <MouseBinding MouseAction="LeftClick"
+                                                  Command="{Binding DataContext.OpenGroupChatCommand,
+                                                      RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                  CommandParameter="{Binding}"/>
+                                </Border.InputBindings>
+                                <Grid>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}"
+                                                   Style="{StaticResource TextBody}"
+                                                   FontWeight="SemiBold"/>
+                                        <TextBlock Text="{Binding Description}"
+                                                   Style="{StaticResource TextCaption}"
+                                                   Margin="0,4,0,0"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Style="{StaticResource TextCaption}"
+                                                   Margin="0,4,0,0"
+                                                   Foreground="{StaticResource TextSecondaryBrush}">
+                                            <Run Text="{Binding MemberCount}"/>
+                                            <Run Text=" miembros · "/>
+                                            <Run Text="{Binding UserRole}"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <TextBlock Text="💬"
+                                               FontSize="20"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource PrimaryBrush}"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Tab: Explorar -->
+                <StackPanel Visibility="{Binding IsExploreTab, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0"
+                                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                 Background="{StaticResource SurfaceBrush}"
+                                 Foreground="{StaticResource TextPrimaryBrush}"
+                                 BorderBrush="{StaticResource BorderBrush}"
+                                 Padding="10,8" BorderThickness="1"/>
+                        <Button Grid.Column="1" Content="Buscar"
+                                Command="{Binding LoadPublicGroupsCommand}"
+                                Background="{StaticResource PrimaryBrush}"
+                                Foreground="{StaticResource TextPrimaryBrush}"
+                                BorderThickness="0" Padding="16,8" Margin="8,0,0,0"/>
+                    </Grid>
+
+                    <ItemsControl ItemsSource="{Binding PublicGroups}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{StaticResource SurfaceBrush}"
+                                        CornerRadius="8" Padding="16" Margin="0,0,0,12">
+                                    <Grid>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Name}"
+                                                       Style="{StaticResource TextBody}"
+                                                       FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding Description}"
+                                                       Style="{StaticResource TextCaption}"
+                                                       Margin="0,4,0,0"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Style="{StaticResource TextCaption}"
+                                                       Margin="0,4,0,0">
+                                                <Run Text="{Binding MemberCount}"/>
+                                                <Run Text=" miembros"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <Button Content="Unirme"
+                                                Command="{Binding DataContext.JoinGroupCommand,
+                                                    RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                CommandParameter="{Binding}"
+                                                Background="{StaticResource PrimaryBrush}"
+                                                Foreground="{StaticResource TextPrimaryBrush}"
+                                                BorderThickness="0" Padding="16,6"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
