@@ -1,0 +1,177 @@
+<UserControl x:Class="Intelectia.WPF.Views.BookDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BackgroundBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header con botón de regreso -->
+        <Border Grid.Row="0" Padding="24,16" Background="{StaticResource SurfaceBrush}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="← Volver"
+                        Command="{Binding GoBackCommand}"
+                        Background="Transparent"
+                        Foreground="{StaticResource PrimaryBrush}"
+                        BorderThickness="0" Padding="0" Margin="0,0,24,0"/>
+                <TextBlock Text="{Binding Title}" Style="{StaticResource TextHeading}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Contenido del detalle -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24">
+            <StackPanel Visibility="{Binding Book, Converter={StaticResource NullToVisibilityConverter}}">
+
+                <!-- Portada + datos principales -->
+                <Grid Margin="0,0,0,32">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Width="200" Height="280"
+                            Background="{StaticResource SurfaceBrush}" CornerRadius="12">
+                        <TextBlock Text="📖" FontSize="64"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+
+                    <StackPanel Grid.Column="1" Margin="24,0,0,0">
+
+                        <TextBlock Text="{Binding Book.Title}" Style="{StaticResource TextHeading}"
+                                   TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+                        <TextBlock Text="{Binding Book.Author}" Style="{StaticResource TextSubhead}"
+                                   Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,16"/>
+
+                        <!-- Calificación -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                            <TextBlock Text="★" Foreground="{StaticResource WarningBrush}"
+                                       FontSize="18" VerticalAlignment="Center"/>
+                            <TextBlock Style="{StaticResource TextBody}" Margin="6,0,0,0">
+                                <Run Text="{Binding Book.AverageRating, StringFormat='{}{0:F1}'}"/>
+                                <Run Text=" — "/>
+                                <Run Text="{Binding Book.ReviewCount}"/>
+                                <Run Text=" reseñas"/>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <!-- Precio -->
+                        <TextBlock Style="{StaticResource TextHeading}"
+                                   Foreground="{StaticResource PrimaryBrush}" Margin="0,0,0,16">
+                            <Run Text="$"/>
+                            <Run Text="{Binding Book.Price, StringFormat='{}{0:F2}'}"/>
+                        </TextBlock>
+
+                        <!-- Metadatos en grid -->
+                        <Grid Margin="0,0,0,24">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Categoría:"
+                                       Style="{StaticResource TextCaption}" Margin="0,0,16,8"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Book.CategoryName}"
+                                       Style="{StaticResource TextBody}"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Formato:"
+                                       Style="{StaticResource TextCaption}" Margin="0,0,16,8"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Book.Format}"
+                                       Style="{StaticResource TextBody}"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Páginas:"
+                                       Style="{StaticResource TextCaption}" Margin="0,0,16,8"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Book.PageCount}"
+                                       Style="{StaticResource TextBody}"/>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="Publicado:"
+                                       Style="{StaticResource TextCaption}" Margin="0,0,16,8"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Book.PublishedYear}"
+                                       Style="{StaticResource TextBody}"/>
+
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="Vendedor:"
+                                       Style="{StaticResource TextCaption}" Margin="0,0,16,8"/>
+                            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Book.VendorName}"
+                                       Style="{StaticResource TextBody}"/>
+                        </Grid>
+
+                        <!-- Botón agregar al carrito -->
+                        <Button Content="Agregar al carrito 🛒"
+                                Command="{Binding AddToCartCommand}"
+                                Background="{StaticResource PrimaryBrush}"
+                                Foreground="{StaticResource TextPrimaryBrush}"
+                                BorderThickness="0" Padding="24,12"
+                                HorizontalAlignment="Left"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
+                        <TextBlock Text="{Binding ErrorMessage}"
+                                   Style="{StaticResource TextCaption}"
+                                   Foreground="{StaticResource ErrorBrush}"
+                                   Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Descripción -->
+                <TextBlock Text="Descripción" Style="{StaticResource TextSubhead}" Margin="0,0,0,12"/>
+                <TextBlock Text="{Binding Book.Description}" Style="{StaticResource TextBody}"
+                           TextWrapping="Wrap" Margin="0,0,0,32"/>
+
+                <!-- Reseñas -->
+                <TextBlock Text="Reseñas" Style="{StaticResource TextSubhead}" Margin="0,0,0,12"/>
+
+                <ItemsControl ItemsSource="{Binding Book.Reviews}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource SurfaceBrush}"
+                                    CornerRadius="8" Padding="16" Margin="0,0,0,12">
+                                <StackPanel>
+                                    <Grid Margin="0,0,0,8">
+                                        <TextBlock Text="{Binding UserFullName}"
+                                                   Style="{StaticResource TextBody}" FontWeight="SemiBold"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                            <TextBlock Text="★" Foreground="{StaticResource WarningBrush}"/>
+                                            <TextBlock Text="{Binding Rating}"
+                                                       Style="{StaticResource TextCaption}"
+                                                       Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <TextBlock Text="{Binding Comment}" Style="{StaticResource TextBody}"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Sin reseñas -->
+                <TextBlock Text="Este libro aún no tiene reseñas."
+                           HorizontalAlignment="Center" Margin="0,16">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                            <Setter Property="FontSize" Value="12"/>
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Book.ReviewCount}" Value="0">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

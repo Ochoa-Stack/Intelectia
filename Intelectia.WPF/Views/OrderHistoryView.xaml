@@ -1,0 +1,112 @@
+<UserControl x:Class="Intelectia.WPF.Views.OrderHistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BackgroundBrush}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Padding="24,16" Background="{StaticResource SurfaceBrush}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="← Marketplace"
+                        Command="{Binding GoToMarketplaceCommand}"
+                        Background="Transparent"
+                        Foreground="{StaticResource PrimaryBrush}"
+                        BorderThickness="0" Padding="0" Margin="0,0,24,0"/>
+                <TextBlock Text="Mis pedidos" Style="{StaticResource TextHeading}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24">
+            <StackPanel>
+
+                <!-- Sin pedidos -->
+                <StackPanel HorizontalAlignment="Center" Margin="0,60"
+                            Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock Text="📦" FontSize="48" HorizontalAlignment="Center"/>
+                    <TextBlock Text="No tienes pedidos todavía"
+                               Style="{StaticResource TextSubhead}"
+                               HorizontalAlignment="Center" Margin="0,16,0,8"/>
+                    <TextBlock Text="Cuando realices una compra, aparecerá aquí."
+                               Style="{StaticResource TextCaption}"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center" Margin="0,0,0,24"/>
+                    <Button Content="Ir al Marketplace"
+                            Command="{Binding GoToMarketplaceCommand}"
+                            Background="{StaticResource PrimaryBrush}"
+                            Foreground="{StaticResource TextPrimaryBrush}"
+                            BorderThickness="0" Padding="24,10"
+                            HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Error -->
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="{StaticResource ErrorBrush}"
+                           Style="{StaticResource TextCaption}"
+                           Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}"
+                           Margin="0,0,0,8"/>
+
+                <!-- Lista de pedidos -->
+                <ItemsControl ItemsSource="{Binding Orders}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource SurfaceBrush}"
+                                    CornerRadius="8" Padding="16" Margin="0,0,0,12">
+                                <StackPanel>
+                                    <!-- Cabecera del pedido -->
+                                    <Grid Margin="0,0,0,12">
+                                        <StackPanel>
+                                            <TextBlock Style="{StaticResource TextBody}" FontWeight="SemiBold">
+                                                <Run Text="Pedido #"/>
+                                                <Run Text="{Binding Id}"/>
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:dd/MM/yyyy  HH:mm}'}"
+                                                       Style="{StaticResource TextCaption}"
+                                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                                       Margin="0,4,0,0"/>
+                                        </StackPanel>
+
+                                        <StackPanel HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding Status}"
+                                                       Style="{StaticResource TextCaption}"
+                                                       Foreground="{StaticResource SuccessBrush}"
+                                                       HorizontalAlignment="Right"/>
+                                            <TextBlock Style="{StaticResource TextSubhead}"
+                                                       Foreground="{StaticResource PrimaryBrush}"
+                                                       HorizontalAlignment="Right" FontWeight="Bold">
+                                                <Run Text="$"/>
+                                                <Run Text="{Binding Total, StringFormat='{}{0:F2}'}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <Separator Background="{StaticResource BorderBrush}" Margin="0,0,0,12"/>
+
+                                    <!-- Items del pedido -->
+                                    <ItemsControl ItemsSource="{Binding Items}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Style="{StaticResource TextCaption}"
+                                                           Margin="0,2">
+                                                    <Run Text="•  "/>
+                                                    <Run Text="{Binding BookTitle}"/>
+                                                    <Run Text=" — $"/>
+                                                    <Run Text="{Binding PriceSnapshot, StringFormat='{}{0:F2}'}"/>
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

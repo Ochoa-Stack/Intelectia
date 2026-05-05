@@ -1,0 +1,58 @@
+using Microsoft.EntityFrameworkCore;
+using Intelectia.Application.Common.Interfaces;
+using Intelectia.Domain.Common;
+using Intelectia.Domain.Entities;
+
+namespace Intelectia.Infrastructure.Persistence;
+
+public class AppDbContext : DbContext, IApplicationDbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+    // Tablas de autenticación y perfiles
+    public DbSet<User> Users => Set<User>();
+    public DbSet<StudentProfile> StudentProfiles => Set<StudentProfile>();
+    public DbSet<VendorProfile> VendorProfiles => Set<VendorProfile>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
+    // Tablas del Marketplace
+    public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Book> Books => Set<Book>();
+    public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<UserBook> UserBooks => Set<UserBook>();
+
+    // Tablas de Comercio
+    public DbSet<Cart> Carts => Set<Cart>();
+    public DbSet<CartItem> CartItems => Set<CartItem>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<Payment> Payments => Set<Payment>();
+
+    // Tablas de Herramientas de Estudio
+    public DbSet<Note> Notes => Set<Note>();
+    public DbSet<Citation> Citations => Set<Citation>();
+    public DbSet<TranslationHistory> TranslationHistories => Set<TranslationHistory>();
+
+    // Grupos de estudio
+    public DbSet<StudyGroup> StudyGroups => Set<StudyGroup>();
+    public DbSet<GroupMember> GroupMembers => Set<GroupMember>();
+    public DbSet<GroupMessage> GroupMessages => Set<GroupMessage>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // Aplica todas las configuraciones del ensamblado automáticamente
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        base.OnModelCreating(modelBuilder);
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        // Actualiza la fecha de modificación en cada entidad que cambie
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        {
+            if (entry.State == EntityState.Modified)
+                entry.Entity.UpdatedAt = DateTime.UtcNow;
+        }
+        return base.SaveChangesAsync(cancellationToken);
+    }
+}

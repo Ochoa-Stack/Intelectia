@@ -1,0 +1,73 @@
+using Intelectia.Domain.Common;
+using Intelectia.Domain.Enums;
+
+namespace Intelectia.Domain.Entities;
+
+public class User : BaseEntity
+{
+    // Datos de identificación básica
+    public string Email { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+
+    // URL de la foto de perfil almacenada en Azure Blob
+    public string? ProfilePictureUrl { get; set; }
+
+    // Contraseña hasheada; null si el usuario entró con Google
+    public string? PasswordHash { get; set; }
+
+    // Indica cómo se registró el usuario
+    public AuthProvider AuthProvider { get; set; } = AuthProvider.Local;
+
+    // ID que devuelve Google cuando el usuario se autentica con esa cuenta
+    public string? GoogleId { get; set; }
+
+    // Indica si el correo fue verificado
+    public bool EmailConfirmed { get; set; } = false;
+
+    // Token temporal para restablecer contraseña
+    public string? PasswordResetToken { get; set; }
+
+    // Fecha límite para usar el token de restablecimiento
+    public DateTime? PasswordResetTokenExpiry { get; set; }
+
+    // Fecha del último acceso al sistema
+    public DateTime? LastLoginAt { get; set; }
+
+    // Relaciones; un User puede tener ambos perfiles activos
+    public StudentProfile? StudentProfile { get; set; }
+    public VendorProfile? VendorProfile { get; set; }
+
+    // Tokens de refresco activos del usuario
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+
+    // Libros adquiridos por este usuario
+    public ICollection<UserBook> UserBooks { get; set; } = new List<UserBook>();
+
+    // Reseñas escritas por este usuario
+    public ICollection<Review> Reviews { get; set; } = new List<Review>();
+
+    // Carrito activo del usuario; null hasta que agrega el primer item
+    public Cart? Cart { get; set; }
+
+    // Historial de pedidos del usuario
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
+
+    // Notas tomadas por el usuario (generales y por libro)
+    public ICollection<Note> Notes { get; set; } = new List<Note>();
+
+    // Citas bibliográficas generadas por el usuario
+    public ICollection<Citation> Citations { get; set; } = new List<Citation>();
+
+    // Historial de traducciones del usuario
+    public ICollection<TranslationHistory> TranslationHistories { get; set; } = new List<TranslationHistory>();
+
+    // Grupos que creó el usuario
+    public ICollection<StudyGroup> CreatedGroups { get; set; } = new List<StudyGroup>();
+
+    // Membresías del usuario en grupos de estudio
+    public ICollection<GroupMember> GroupMemberships { get; set; } = new List<GroupMember>();
+
+    // Mensajes enviados por el usuario en grupos
+    public ICollection<GroupMessage> GroupMessages { get; set; } = new List<GroupMessage>();
+}
