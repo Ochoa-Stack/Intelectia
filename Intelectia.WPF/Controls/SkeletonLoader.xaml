@@ -1,0 +1,28 @@
+<UserControl x:Class="Intelectia.WPF.Controls.SkeletonLoader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+        <!-- Animación de pulso para el skeleton -->
+        <Storyboard x:Key="PulseAnimation" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="SkeletonRect"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0.3" To="0.7"
+                             Duration="0:0:0.8"
+                             AutoReverse="True"/>
+        </Storyboard>
+    </UserControl.Resources>
+
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="UserControl.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource PulseAnimation}"/>
+        </EventTrigger>
+    </UserControl.Triggers>
+
+    <!-- Rectángulo que simula contenido cargando -->
+    <Rectangle x:Name="SkeletonRect"
+               Fill="{StaticResource SurfaceLightBrush}"
+               RadiusX="4" RadiusY="4"
+               Height="{Binding Height, RelativeSource={RelativeSource AncestorType=UserControl}}"
+               Width="{Binding Width, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+</UserControl>

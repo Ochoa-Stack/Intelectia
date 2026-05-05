@@ -3,6 +3,7 @@
     <ProjectReference Include="..\Intelectia.Shared\Intelectia.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AdysTech.CredentialManager" Version="3.1.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.7" />

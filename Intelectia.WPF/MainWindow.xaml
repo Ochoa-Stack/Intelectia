@@ -6,9 +6,66 @@
         MinWidth="1024" MinHeight="600"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BackgroundBrush}">
+
     <Grid>
-        <!-- ContentControl muestra el ViewModel activo; el DataTemplate resuelve qué View usar -->
-        <ContentControl x:Name="NavigationFrame"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Banner de sin conexión -->
+        <Border Grid.Row="0"
+                Background="{StaticResource WarningBrush}"
+                Padding="16,8"
+                Visibility="{Binding IsOffline, Converter={StaticResource BoolToVisibilityConverter}}">
+            <TextBlock Text="⚠ Sin conexión a internet. Algunas funciones pueden no estar disponibles."
+                       Foreground="#1A1A2E"
+                       FontSize="13"
+                       HorizontalAlignment="Center"/>
+        </Border>
+
+        <!-- Contenido principal -->
+        <ContentControl Grid.Row="1"
+                        x:Name="NavigationFrame"
+                        Style="{StaticResource FadeContentControl}"
                         Content="{Binding CurrentViewModel}"/>
+
+        <!-- Sistema de toasts, se encuentra superpuesto sobre todo el contenido -->
+        <ItemsControl Grid.Row="0" Grid.RowSpan="2"
+                      ItemsSource="{Binding Toasts}"
+                      VerticalAlignment="Bottom"
+                      HorizontalAlignment="Right"
+                      Margin="0,0,24,24"
+                      Panel.ZIndex="999">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border CornerRadius="8" Padding="16,12"
+                            Margin="0,0,0,8"
+                            MinWidth="280" MaxWidth="400">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Background" Value="{StaticResource SurfaceLightBrush}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Type}" Value="Success">
+                                        <Setter Property="Background" Value="{StaticResource SuccessBrush}"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Type}" Value="Error">
+                                        <Setter Property="Background" Value="{StaticResource ErrorBrush}"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Type}" Value="Warning">
+                                        <Setter Property="Background" Value="{StaticResource WarningBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <TextBlock Text="{Binding Message}"
+                                   Foreground="White"
+                                   TextWrapping="Wrap"
+                                   FontSize="13"/>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
     </Grid>
 </Window>

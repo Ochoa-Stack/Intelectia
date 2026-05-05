@@ -5,12 +5,15 @@
              xmlns:authVm="clr-namespace:Intelectia.WPF.ViewModels.Auth"
              xmlns:authV="clr-namespace:Intelectia.WPF.Views.Auth"
              xmlns:vm="clr-namespace:Intelectia.WPF.ViewModels"
-             xmlns:v="clr-namespace:Intelectia.WPF.Views">
+             xmlns:v="clr-namespace:Intelectia.WPF.Views"
+             xmlns:controls="clr-namespace:Intelectia.WPF.Controls">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/Colors.xaml"/>
                 <ResourceDictionary Source="Themes/Typography.xaml"/>
+
+                <ResourceDictionary Source="Themes/Animations.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Converters -->
@@ -66,6 +69,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type vm:GroupChatViewModel}">
                 <v:GroupChatView/>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ProfileViewModel}">
+                <v:ProfileView/>
             </DataTemplate>
 
         </ResourceDictionary>

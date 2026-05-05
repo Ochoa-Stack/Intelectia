@@ -4,20 +4,23 @@ namespace Intelectia.WPF.Services;
 
 public class AuthService
 {
-    private readonly ApiClient  _apiClient;
+    private readonly ApiClient _apiClient;
     private readonly TokenStore _tokenStore;
+    private readonly CredentialService _credentialService;
 
-    // Sesión activa en memoria; null si no hay login
     public AuthResponseDto? CurrentSession { get; private set; }
     public bool IsAuthenticated => CurrentSession is not null;
 
-    public AuthService(ApiClient apiClient, TokenStore tokenStore)
+    public AuthService(
+        ApiClient apiClient,
+        TokenStore tokenStore,
+        CredentialService credentialService)
     {
-        _apiClient  = apiClient;
-        _tokenStore = tokenStore;
+        _apiClient         = apiClient;
+        _tokenStore        = tokenStore;
+        _credentialService = credentialService;
     }
 
-    // Registra un usuario nuevo y persiste la sesión
     public async Task<AuthResponseDto> RegisterAsync(
         RegisterRequest request, CancellationToken cancellationToken = default)
     {
@@ -27,7 +30,6 @@ public class AuthService
         return response;
     }
 
-    // Autentica al usuario y persiste la sesión
     public async Task<AuthResponseDto> LoginAsync(
         LoginRequest request, CancellationToken cancellationToken = default)
     {
@@ -37,7 +39,30 @@ public class AuthService
         return response;
     }
 
-    // Renueva el JWT usando el refresh token guardado
+    // Intenta restaurar la sesión desde el Credential Manager al arrancar la app
+    public async Task<bool> TryRestoreSessionAsync(CancellationToken cancellationToken = default)
+    {
+        var savedToken = _credentialService.LoadRefreshToken();
+        if (savedToken is null) return false;
+
+        try
+        {
+            var response = await _apiClient.PostAsync<AuthResponseDto>(
+                "api/auth/refresh",
+                new RefreshTokenRequest { RefreshToken = savedToken },
+                cancellationToken);
+
+            SetSession(response);
+            return true;
+        }
+        catch
+        {
+            // El token guardado ya no es válido; lo limpiamos
+            _credentialService.DeleteRefreshToken();
+            return false;
+        }
+    }
+
     public async Task<bool> RefreshSessionAsync(CancellationToken cancellationToken = default)
     {
         if (CurrentSession is null) return false;
@@ -53,13 +78,11 @@ public class AuthService
         }
         catch
         {
-            // Refresh fallido; cerramos la sesión localmente
             ClearSession();
             return false;
         }
     }
 
-    // Revoca el refresh token en el servidor y limpia la sesión local
     public async Task LogoutAsync(CancellationToken cancellationToken = default)
     {
         if (CurrentSession is null) return;
@@ -73,7 +96,6 @@ public class AuthService
         }
         finally
         {
-            // Limpiamos la sesión local sin importar si el servidor respondió
             ClearSession();
         }
     }
@@ -89,17 +111,23 @@ public class AuthService
         ResetPasswordRequest request, CancellationToken cancellationToken = default)
         => await _apiClient.PostAsync("api/auth/reset-password", request, cancellationToken);
 
-    // Guarda la sesión y escribe el token en el TokenStore compartido; AuthTokenHandler lo leerá automáticamente en cada petición subsecuente
+    // Registra una sesión construida externamente; usado por Google OAuth
+    public void SetSessionFromExternal(AuthResponseDto session)
+        => SetSession(session);
+
+    // Guarda la sesión, el token en memoria y el refresh token en Credential Manager
     private void SetSession(AuthResponseDto session)
     {
         CurrentSession          = session;
         _tokenStore.AccessToken = session.AccessToken;
+        _credentialService.SaveRefreshToken(session.RefreshToken);
     }
 
-    // Borra la sesión y elimina el token del TokenStore
-    private void ClearSession()
+    // Limpia la sesión en memoria y elimina el token del Credential Manager
+    public void ClearSession()
     {
         CurrentSession          = null;
         _tokenStore.AccessToken = null;
+        _credentialService.DeleteRefreshToken();
     }
 }

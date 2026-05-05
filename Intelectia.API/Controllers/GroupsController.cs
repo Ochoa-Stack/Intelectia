@@ -17,6 +17,8 @@ namespace Intelectia.API.Controllers;
 [Authorize]
 public class GroupsController : ControllerBase
 {
+    /* Definimos e inyectamos la instancia para la gestionar
+     * el envío de comandos y consultas del controlador */
     private readonly IMediator _mediator;
 
     public GroupsController(IMediator mediator)

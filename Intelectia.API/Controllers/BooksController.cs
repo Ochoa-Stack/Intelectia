@@ -21,7 +21,7 @@ public class BooksController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary> Devuelve el catálogo paginado con filtros opcionales. Acceso público. </summary>
+    // Devuelve el catálogo paginado con filtros opcionales. Acceso público
     [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> GetBooks(
@@ -42,7 +42,7 @@ public class BooksController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary> Devuelve el detalle de un libro con sus reseñas. Acceso público. </summary>
+    // Devuelve el detalle de un libro con sus reseñas. Acceso público
     [HttpGet("{id:guid}")]
     [AllowAnonymous]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
@@ -51,9 +51,7 @@ public class BooksController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Agrega una reseña a un libro. Requiere autenticación y haber adquirido el libro.
-    /// </summary>
+    // Agrega una reseña a un libro. Requiere autenticación y haber adquirido el libro
     [HttpPost("{id:guid}/reviews")]
     [Authorize]
     public async Task<IActionResult> AddReview(
@@ -71,7 +69,7 @@ public class BooksController : ControllerBase
             new AddReviewCommand(id, userId, request.Rating, request.Comment),
             cancellationToken);
 
-        // 201 Created apuntando al detalle del libro donde aparecerá la reseña
+        // '201 Created' apuntando al detalle del libro donde aparecerá la reseña
         return CreatedAtAction(nameof(GetById), new { id }, result);
     }
 }

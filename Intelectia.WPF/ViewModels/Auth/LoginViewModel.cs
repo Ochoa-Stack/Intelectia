@@ -10,6 +10,8 @@ public partial class LoginViewModel : BaseViewModel
 {
     private readonly AuthService _authService;
     private readonly NavigationService _navigationService;
+    private readonly ToastService _toastService;
+    private readonly GoogleAuthService _googleAuthService;
     private readonly Func<RegisterViewModel> _registerVmFactory;
     private readonly Func<ForgotPasswordViewModel> _forgotPasswordVmFactory;
     private readonly Func<MarketplaceViewModel> _marketplaceVmFactory;
@@ -28,12 +30,16 @@ public partial class LoginViewModel : BaseViewModel
     public LoginViewModel(
         AuthService authService,
         NavigationService navigationService,
+        ToastService toastService,
+        Func<GoogleAuthService> googleAuthServiceFactory,
         Func<RegisterViewModel> registerVmFactory,
         Func<ForgotPasswordViewModel> forgotPasswordVmFactory,
         Func<MarketplaceViewModel> marketplaceVmFactory)
     {
         _authService             = authService;
         _navigationService       = navigationService;
+        _toastService            = toastService;
+        _googleAuthService       = googleAuthServiceFactory();
         _registerVmFactory       = registerVmFactory;
         _forgotPasswordVmFactory = forgotPasswordVmFactory;
         _marketplaceVmFactory    = marketplaceVmFactory;
@@ -67,10 +73,51 @@ public partial class LoginViewModel : BaseViewModel
         catch (ApiException ex)
         {
             ErrorMessage = ex.Message;
+            _toastService.Error(ex.Message);
         }
         catch
         {
-            ErrorMessage = "No se pudo conectar con el servidor. Verifica tu conexión.";
+            var msg = "No se pudo conectar con el servidor. Verifica tu conexión.";
+            ErrorMessage = msg;
+            _toastService.Error(msg);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task LoginWithGoogleAsync()
+    {
+        IsBusy = true;
+        ErrorMessage = string.Empty;
+
+        try
+        {
+            var session = await _googleAuthService.AuthenticateAsync();
+
+            // Guardamos la sesión manualmente ya que GoogleAuthService la construye
+            _authService.SetSessionFromExternal(session);
+
+            var marketplaceVm = _marketplaceVmFactory();
+            await marketplaceVm.InitializeAsync();
+            _navigationService.NavigateTo(marketplaceVm);
+        }
+        catch (TimeoutException)
+        {
+            ErrorMessage = "La autenticación con Google expiró. Intenta de nuevo.";
+            _toastService.Warning(ErrorMessage);
+        }
+        catch (ApiException ex)
+        {
+            ErrorMessage = ex.Message;
+            _toastService.Error(ex.Message);
+        }
+        catch
+        {
+            ErrorMessage = "No se pudo completar la autenticación con Google.";
+            _toastService.Error(ErrorMessage);
         }
         finally
         {

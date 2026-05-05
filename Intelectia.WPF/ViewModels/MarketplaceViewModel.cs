@@ -17,6 +17,7 @@ public partial class MarketplaceViewModel : BaseViewModel
     private readonly Func<VendorDashboardViewModel> _vendorVmFactory;
     private readonly Func<VendorOnboardingViewModel> _vendorOnboardingVmFactory;
     private readonly Func<GroupsViewModel> _groupsVmFactory;
+    private readonly Func<ProfileViewModel> _profileVmFactory;
 
     // Lista de libros que se muestran en el grid
     public ObservableCollection<BookSummaryDto> Books { get; } = new();
@@ -53,7 +54,8 @@ public partial class MarketplaceViewModel : BaseViewModel
         Func<LibraryViewModel> libraryVmFactory,
         Func<VendorDashboardViewModel> vendorVmFactory,
         Func<VendorOnboardingViewModel> vendorOnboardingVmFactory,
-        Func<GroupsViewModel> groupsVmFactory)
+        Func<GroupsViewModel> groupsVmFactory,
+        Func<ProfileViewModel> profileVmFactory)
     {
         _marketplaceService        = marketplaceService;
         _navigationService         = navigationService;
@@ -63,6 +65,7 @@ public partial class MarketplaceViewModel : BaseViewModel
         _vendorVmFactory           = vendorVmFactory;
         _vendorOnboardingVmFactory = vendorOnboardingVmFactory;
         _groupsVmFactory           = groupsVmFactory;
+        _profileVmFactory          = profileVmFactory;
         Title = "Marketplace";
     }
 
@@ -203,6 +206,14 @@ public partial class MarketplaceViewModel : BaseViewModel
     private async Task GoToGroupsAsync()
     {
         var vm = _groupsVmFactory();
+        await vm.InitializeAsync();
+        _navigationService.NavigateTo(vm);
+    }
+
+    [RelayCommand]
+    private async Task GoToProfileAsync()
+    {
+        var vm = _profileVmFactory();
         await vm.InitializeAsync();
         _navigationService.NavigateTo(vm);
     }
