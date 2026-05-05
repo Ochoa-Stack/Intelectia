@@ -1,0 +1,199 @@
+<UserControl x:Class="Intelectia.WPF.Views.ProfileView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource BackgroundBrush}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Padding="24,16" Background="{StaticResource SurfaceBrush}">
+            <StackPanel Orientation="Horizontal">
+                <Button Content="← Marketplace"
+                        Command="{Binding GoToMarketplaceCommand}"
+                        Background="Transparent" Foreground="{StaticResource PrimaryBrush}"
+                        BorderThickness="0" Padding="0" Margin="0,0,24,0"/>
+                <TextBlock Text="Mi Perfil" Style="{StaticResource TextHeading}"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Tabs -->
+        <Border Grid.Row="1" Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
+            <StackPanel Orientation="Horizontal" Margin="24,0">
+                <Button Content="👤 Datos personales"
+                        Command="{Binding SwitchTabCommand}" CommandParameter="profile"
+                        Background="Transparent" BorderThickness="0,0,0,2"
+                        Padding="0,12" Margin="0,0,24,0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsProfileTab}" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="🔒 Seguridad"
+                        Command="{Binding SwitchTabCommand}" CommandParameter="security"
+                        Background="Transparent" BorderThickness="0,0,0,2" Padding="0,12">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSecurityTab}" Value="True">
+                                    <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Padding="24">
+            <StackPanel MaxWidth="520" HorizontalAlignment="Left">
+
+                <!-- Mensajes de feedback -->
+                <Border Background="{StaticResource SurfaceBrush}"
+                        CornerRadius="8" Padding="14"
+                        Margin="0,0,0,16"
+                        Visibility="{Binding HasSuccess, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock Text="{Binding SuccessMessage}"
+                               Foreground="{StaticResource SuccessBrush}"
+                               Style="{StaticResource TextBody}"/>
+                </Border>
+
+                <Border Background="{StaticResource SurfaceBrush}"
+                        CornerRadius="8" Padding="14"
+                        Margin="0,0,0,16"
+                        Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock Text="{Binding ErrorMessage}"
+                               Foreground="{StaticResource ErrorBrush}"
+                               Style="{StaticResource TextBody}"
+                               TextWrapping="Wrap"/>
+                </Border>
+
+                <!-- Tab: Datos personales -->
+                <StackPanel Visibility="{Binding IsProfileTab, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                    <!-- Avatar placeholder -->
+                    <Border Width="80" Height="80" CornerRadius="40"
+                            Background="{StaticResource PrimaryBrush}"
+                            HorizontalAlignment="Left" Margin="0,0,0,24">
+                        <TextBlock Text="👤" FontSize="36"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Border>
+
+                    <!-- Email — solo lectura -->
+                    <TextBlock Text="Correo electrónico"
+                               Style="{StaticResource TextCaption}" Margin="0,0,0,4"/>
+                    <Border Background="{StaticResource SurfaceBrush}"
+                            CornerRadius="4" Padding="12,10"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1" Margin="0,0,0,16">
+                        <TextBlock Text="{Binding Email}"
+                                   Style="{StaticResource TextBody}"
+                                   Foreground="{StaticResource TextSecondaryBrush}"/>
+                    </Border>
+
+                    <TextBlock Text="Nombre" Style="{StaticResource TextCaption}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"
+                             Background="{StaticResource SurfaceBrush}"
+                             Foreground="{StaticResource TextPrimaryBrush}"
+                             BorderBrush="{StaticResource BorderBrush}"
+                             Padding="12,10" BorderThickness="1" Margin="0,0,0,16"/>
+
+                    <TextBlock Text="Apellido" Style="{StaticResource TextCaption}" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"
+                             Background="{StaticResource SurfaceBrush}"
+                             Foreground="{StaticResource TextPrimaryBrush}"
+                             BorderBrush="{StaticResource BorderBrush}"
+                             Padding="12,10" BorderThickness="1" Margin="0,0,0,24"/>
+
+                    <!-- Roles activos -->
+                    <TextBlock Text="Roles activos" Style="{StaticResource TextCaption}" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                        <Border Padding="10,4" CornerRadius="12"
+                                Background="{StaticResource PrimaryBrush}"
+                                Margin="0,0,8,0"
+                                Visibility="{Binding IsStudent, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock Text="Estudiante" Style="{StaticResource TextCaption}"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                        <Border Padding="10,4" CornerRadius="12"
+                                Background="{StaticResource SecondaryBrush}"
+                                Visibility="{Binding IsVendor, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <TextBlock Text="Vendedor" Style="{StaticResource TextCaption}"
+                                       Foreground="{StaticResource TextPrimaryBrush}"/>
+                        </Border>
+                    </StackPanel>
+
+                    <Button Content="Guardar cambios"
+                            Command="{Binding SaveProfileCommand}"
+                            Background="{StaticResource PrimaryBrush}"
+                            Foreground="{StaticResource TextPrimaryBrush}"
+                            BorderThickness="0" Padding="24,12"
+                            HorizontalAlignment="Left"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
+                </StackPanel>
+
+                <!-- Tab: Seguridad -->
+                <StackPanel Visibility="{Binding IsSecurityTab, Converter={StaticResource BoolToVisibilityConverter}}">
+
+                    <TextBlock Text="Cambiar contraseña"
+                               Style="{StaticResource TextSubhead}" Margin="0,0,0,24"/>
+
+                    <TextBlock Text="Contraseña actual" Style="{StaticResource TextCaption}" Margin="0,0,0,4"/>
+                    <PasswordBox x:Name="CurrentPasswordBox"
+                                 PasswordChanged="CurrentPasswordBox_PasswordChanged"
+                                 Background="{StaticResource SurfaceBrush}"
+                                 Foreground="{StaticResource TextPrimaryBrush}"
+                                 BorderBrush="{StaticResource BorderBrush}"
+                                 Padding="12,10" BorderThickness="1" Margin="0,0,0,16"/>
+
+                    <TextBlock Text="Nueva contraseña" Style="{StaticResource TextCaption}" Margin="0,0,0,4"/>
+                    <PasswordBox x:Name="NewPasswordBox"
+                                 PasswordChanged="NewPasswordBox_PasswordChanged"
+                                 Background="{StaticResource SurfaceBrush}"
+                                 Foreground="{StaticResource TextPrimaryBrush}"
+                                 BorderBrush="{StaticResource BorderBrush}"
+                                 Padding="12,10" BorderThickness="1" Margin="0,0,0,16"/>
+
+                    <TextBlock Text="Confirmar nueva contraseña" Style="{StaticResource TextCaption}" Margin="0,0,0,4"/>
+                    <PasswordBox x:Name="ConfirmPasswordBox"
+                                 PasswordChanged="ConfirmPasswordBox_PasswordChanged"
+                                 Background="{StaticResource SurfaceBrush}"
+                                 Foreground="{StaticResource TextPrimaryBrush}"
+                                 BorderBrush="{StaticResource BorderBrush}"
+                                 Padding="12,10" BorderThickness="1" Margin="0,0,0,24"/>
+
+                    <TextBlock Style="{StaticResource TextCaption}"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               TextWrapping="Wrap" Margin="0,0,0,16"
+                               Text="La contraseña debe tener al menos 8 caracteres, una mayúscula y un número."/>
+
+                    <Button Content="Cambiar contraseña"
+                            Command="{Binding ChangePasswordCommand}"
+                            Background="{StaticResource PrimaryBrush}"
+                            Foreground="{StaticResource TextPrimaryBrush}"
+                            BorderThickness="0" Padding="24,12"
+                            HorizontalAlignment="Left"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

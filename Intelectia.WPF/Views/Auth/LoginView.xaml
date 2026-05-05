@@ -42,6 +42,14 @@
                     Foreground="{StaticResource TextPrimaryBrush}"
                     Padding="0,12"
                     BorderThickness="0"
+                    Margin="0,0,0,8"/>
+
+            <Button Content="Continuar con Google"
+                    Command="{Binding LoginWithGoogleCommand}"
+                    Background="{StaticResource SurfaceLightBrush}"
+                    Foreground="{StaticResource TextPrimaryBrush}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1" Padding="0,12"
                     Margin="0,0,0,16"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

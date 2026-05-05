@@ -24,10 +24,8 @@ public class PaymentsController : ControllerBase
         _logger        = logger;
     }
 
-    /// <summary>
-    /// Endpoint que Stripe llama cuando ocurre un evento de pago.
-    /// No requiere JWT; la autenticidad se verifica con la firma de Stripe.
-    /// </summary>
+    /* Endpoint que Stripe llama cuando ocurre un evento de pago.
+     * No requiere JWT; la autenticidad se verifica con la firma de Stripe */
     [HttpPost("webhook")]
     [AllowAnonymous]
     public async Task<IActionResult> Webhook(CancellationToken cancellationToken)

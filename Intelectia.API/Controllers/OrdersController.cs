@@ -21,7 +21,7 @@ public class OrdersController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary> Devuelve el historial de pedidos del usuario autenticado </summary>
+    // Devuelve el historial de pedidos del usuario autenticado
     [HttpGet]
     public async Task<IActionResult> GetOrders(CancellationToken cancellationToken)
     {
@@ -29,7 +29,7 @@ public class OrdersController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary> Devuelve el detalle de un pedido. Solo el dueño puede verlo </summary>
+    // Devuelve el detalle de un pedido. Solo el dueño puede verlo
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
@@ -38,10 +38,8 @@ public class OrdersController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary>
-    /// Crea un pedido desde el carrito e inicia el PaymentIntent en Stripe
-    /// Devuelve el ClientSecret para que el cliente confirme el pago
-    /// </summary>
+    /* Crea un pedido desde el carrito e inicia el PaymentIntent en Stripe.
+     * Devuelve el ClientSecret para que el cliente confirme el pago */
     [HttpPost]
     public async Task<IActionResult> CreateOrder(CancellationToken cancellationToken)
     {
@@ -50,7 +48,7 @@ public class OrdersController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = result.OrderId }, result);
     }
 
-    /// <summary> Cancela un pedido pendiente de pago. Solo el dueño puede cancelarlo </summary>
+    // Cancela un pedido pendiente de pago. Solo el dueño puede cancelarlo
     [HttpPut("{id:guid}/cancel")]
     public async Task<IActionResult> Cancel(Guid id, CancellationToken cancellationToken)
     {

@@ -7,6 +7,7 @@ using Intelectia.Application.Features.Auth.Commands.Logout;
 using Intelectia.Application.Features.Auth.Commands.RefreshToken;
 using Intelectia.Application.Features.Auth.Commands.Register;
 using Intelectia.Application.Features.Auth.Commands.ResetPassword;
+using Intelectia.Application.Features.Auth.Commands.GoogleAuth;
 using Intelectia.Shared.DTOs.Auth;
 
 namespace Intelectia.API.Controllers;
@@ -16,10 +17,12 @@ namespace Intelectia.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(IMediator mediator)
+    public AuthController(IMediator mediator, IConfiguration configuration)
     {
-        _mediator = mediator;
+        _mediator      = mediator;
+        _configuration = configuration;
     }
 
     // Procesamos 'Registro' con email y contraseña
@@ -95,4 +98,40 @@ public class AuthController : ControllerBase
 
         return Ok(new { message = "Contraseña actualizada exitosamente." });
     }
+
+    // Devuelve la URL de autorización de Google para que el cliente WPF la abra en el navegador
+    [HttpGet("google/url")]
+    [AllowAnonymous]
+    public IActionResult GetGoogleAuthUrl(
+        [FromQuery] string redirectUri,
+        [FromQuery] string state)
+    {
+        var clientId = _configuration["ExternalServices:Google:ClientId"]
+            ?? throw new InvalidOperationException("Google ClientId no configurado.");
+
+        // Construimos la URL de autorización de Google OAuth 2.0
+        var authUrl = "https://accounts.google.com/o/oauth2/v2/auth" +
+            $"?client_id={Uri.EscapeDataString(clientId)}" +
+            $"&redirect_uri={Uri.EscapeDataString(redirectUri)}" +
+            $"&response_type=code" +
+            $"&scope={Uri.EscapeDataString("openid email profile")}" +
+            $"&state={Uri.EscapeDataString(state)}" +
+            $"&access_type=offline";
+
+        return Ok(new { authUrl });
+    }
+
+    // Canjea el code de Google por tokens de Intelectia
+    [HttpPost("google/callback")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GoogleCallback(
+        [FromBody] GoogleCallbackDto request,
+        CancellationToken cancellationToken)
+    {
+        var result = await _mediator.Send(
+            new GoogleAuthCommand(request.Code, request.RedirectUri), cancellationToken);
+        return Ok(result);
+    }
 }
+
+public record GoogleCallbackDto(string Code, string RedirectUri);

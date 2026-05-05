@@ -20,7 +20,7 @@ public class CartController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary> Devuelve el carrito del usuario autenticado. Lo crea vacío si no existe </summary>
+    // Devuelve el carrito del usuario autenticado. Lo crea vacío si no existe
     [HttpGet]
     public async Task<IActionResult> GetCart(CancellationToken cancellationToken)
     {
@@ -28,7 +28,7 @@ public class CartController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary> Agrega un libro al carrito </summary>
+    // Agrega un libro al carrito
     [HttpPost("items")]
     public async Task<IActionResult> AddItem(
         [FromBody] AddToCartRequest request,
@@ -39,7 +39,7 @@ public class CartController : ControllerBase
         return Ok(result);
     }
 
-    /// <summary> Elimina un item del carrito por su ID </summary>
+    // Elimina un item del carrito por su ID
     [HttpDelete("items/{cartItemId:guid}")]
     public async Task<IActionResult> RemoveItem(
         Guid cartItemId,

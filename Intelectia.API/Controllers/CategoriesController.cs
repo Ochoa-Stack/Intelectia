@@ -15,7 +15,7 @@ public class CategoriesController : ControllerBase
         _mediator = mediator;
     }
 
-    /// <summary> Devuelve todas las categorías activas para los filtros del catálogo. </summary>
+    // Devuelve todas las categorías activas para los filtros del catálogo
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
