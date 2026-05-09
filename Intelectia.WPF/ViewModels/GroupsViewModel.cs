@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Intelectia.Shared.DTOs.Groups;
@@ -102,7 +102,7 @@ public partial class GroupsViewModel : BaseViewModel
             foreach (var g in groups)
                 PublicGroups.Add(g);
         }
-        catch { }
+        catch (System.Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
         finally
         {
             IsBusy = false;
@@ -129,7 +129,7 @@ public partial class GroupsViewModel : BaseViewModel
             NewGroupDescription = string.Empty;
             ShowCreateForm      = false;
 
-            // Abrimos el chat del grupo recién creado
+            // Abrimos el chat del grupo reciÃ©n creado
             await OpenGroupChatAsync(group);
         }
         catch (ApiException ex)
@@ -192,3 +192,4 @@ public partial class GroupsViewModel : BaseViewModel
         _navigationService.NavigateTo(vm);
     }
 }
+

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Intelectia.Application.Common.Interfaces;
 using Intelectia.Domain.Common;
 using Intelectia.Domain.Entities;
@@ -42,7 +43,26 @@ public class AppDbContext : DbContext, IApplicationDbContext
     {
         // Aplica todas las configuraciones del ensamblado automáticamente
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        
+        // Global Query Filter para Soft Delete
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+            {
+                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(
+                    ConvertFilterExpression<BaseEntity>(e => !e.IsDeleted, entityType.ClrType));
+            }
+        }
+        
         base.OnModelCreating(modelBuilder);
+    }
+
+    private static System.Linq.Expressions.LambdaExpression ConvertFilterExpression<TInterface>(
+        System.Linq.Expressions.Expression<Func<TInterface, bool>> filterExpression, Type entityType)
+    {
+        var newParam = System.Linq.Expressions.Expression.Parameter(entityType);
+        var newBody = ReplacingExpressionVisitor.Replace(filterExpression.Parameters.Single(), newParam, filterExpression.Body);
+        return System.Linq.Expressions.Expression.Lambda(newBody, newParam);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

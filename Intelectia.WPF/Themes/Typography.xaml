@@ -1,11 +1,9 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!--
-        Poppins e Inter son fuentes externas.
-        Si no están instaladas en el sistema, WPF cae al font fallback del sistema.
-        En Fase 8 (Polish) se embeben como recursos del proyecto.
-    -->
+    <!-- Poppins e Inter son fuentes externas; si no están instaladas en el sistema,
+    WPF cae al font fallback del sistema. Están embebidas como recursos del proyecto -->
+    
     <FontFamily x:Key="FontPoppins">Poppins, Segoe UI</FontFamily>
     <FontFamily x:Key="FontInter">Inter, Segoe UI</FontFamily>
 

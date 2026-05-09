@@ -24,23 +24,21 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBox Grid.Column="0"
-                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                             Background="{StaticResource SurfaceLightBrush}"
-                             Foreground="{StaticResource TextPrimaryBrush}"
-                             BorderBrush="{StaticResource BorderBrush}"
-                             Padding="8,6" BorderThickness="1"/>
-                    <Button Grid.Column="1" Content="🔍"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Button Grid.Column="1"
                             Command="{Binding SearchCommand}"
                             Background="{StaticResource PrimaryBrush}"
                             Foreground="{StaticResource TextPrimaryBrush}"
-                            BorderThickness="0" Padding="8,6" Margin="4,0,0,0"/>
+                            BorderThickness="0" Padding="10,6" Margin="4,0,0,0">
+                        <Path Data="{StaticResource IconSearch}"
+                              Fill="White" Width="14" Height="14" Stretch="Uniform"/>
+                    </Button>
                 </Grid>
 
-                <!-- Categorías -->
+                <!-- Categori­as -->
                 <TextBlock Text="Categoría" Style="{StaticResource TextCaption}" Margin="0,0,0,4"/>
                 <ListBox ItemsSource="{Binding Categories}"
-                         SelectedItem="{Binding SelectedCategory}"
-                         Background="Transparent" BorderThickness="0" Margin="0,0,0,16">
+                         SelectedItem="{Binding SelectedCategory}" Margin="0,0,0,16">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Name}" Style="{StaticResource TextBody}" Padding="4,6"/>
@@ -66,11 +64,7 @@
                 <ComboBox ItemsSource="{Binding SortOptions}"
                           SelectedValuePath="Key"
                           DisplayMemberPath="Label"
-                          SelectedValue="{Binding SelectedSortBy}"
-                          Background="{StaticResource SurfaceLightBrush}"
-                          Foreground="{StaticResource TextPrimaryBrush}"
-                          BorderBrush="{StaticResource BorderBrush}"
-                          Padding="8,6"/>
+                          SelectedValue="{Binding SelectedSortBy}" SelectionChanged="ComboBox_SelectionChanged"/>
 
             </StackPanel>
         </Border>
@@ -87,6 +81,12 @@
             <Border Grid.Row="0" Padding="24,16" Background="{StaticResource SurfaceBrush}">
                 <Grid>
                     <StackPanel Orientation="Horizontal">
+                        <!-- Logo compacto: solo ícono en el header -->
+                        <controls:IntelectiaLogo IconSize="28"
+                                                 FontSize="16"
+                                                 ShowWordmark="Collapsed"
+                                                 VerticalAlignment="Center"
+                                                 Margin="0,0,12,0"/>
                         <TextBlock Text="Marketplace" Style="{StaticResource TextHeading}" VerticalAlignment="Center"/>
                         <TextBlock Margin="12,0,0,0" VerticalAlignment="Center" Style="{StaticResource TextCaption}">
                             <Run Text="{Binding TotalCount, Mode=OneWay}"/>
@@ -94,7 +94,7 @@
                         </TextBlock>
                     </StackPanel>
 
-                    <!-- Accesos rápidos del header -->
+                    <!-- Accesos rapidos del header -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <!-- Skeleton loaders mientras carga el catálogo -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -102,36 +102,69 @@
                             <controls:SkeletonLoader Width="80" Height="16" Margin="0,0,8,0"/>
                             <controls:SkeletonLoader Width="120" Height="16"/>
                         </StackPanel>
-                        <Button Content="👤 Perfil"
-                                Command="{Binding GoToProfileCommand}"
+                        <Button Command="{Binding GoToProfileCommand}"
                                 Background="Transparent"
                                 Foreground="{StaticResource TextSecondaryBrush}"
                                 BorderThickness="0" Padding="0"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                Margin="0,0,16,0"/>
-                        <Button Content="👥 Grupos"
-                                Command="{Binding GoToGroupsCommand}"
+                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Margin="0,0,16,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Path Data="{StaticResource IconUser}"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Width="16" Height="16" Stretch="Uniform"
+                                      Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Perfil"
+                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding GoToGroupsCommand}"
                                 Background="Transparent"
                                 Foreground="{StaticResource TextSecondaryBrush}"
                                 BorderThickness="0" Padding="0"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                Margin="0,0,16,0"/>
-                        <Button Content="🏪 Mi Tienda"
-                                Command="{Binding GoToVendorDashboardCommand}"
+                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Margin="0,0,16,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Path Data="{StaticResource IconUsers}"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Width="16" Height="16" Stretch="Uniform"
+                                      Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Grupos"
+                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding GoToVendorDashboardCommand}"
                                 Background="Transparent"
                                 Foreground="{StaticResource SecondaryBrush}"
                                 BorderThickness="0" Padding="0"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                Margin="0,0,16,0"/>
-                        <Button Content="📚 Mi Biblioteca"
-                                Command="{Binding GoToLibraryCommand}"
+                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Margin="0,0,16,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Path Data="{StaticResource IconStore}"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Width="16" Height="16" Stretch="Uniform"
+                                      Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Mi Tienda"
+                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding GoToLibraryCommand}"
                                 Background="Transparent"
                                 Foreground="{StaticResource PrimaryBrush}"
                                 BorderThickness="0" Padding="0"
-                                VerticalAlignment="Center"/>
+                                VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Path Data="{StaticResource IconBooks}"
+                                      Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                      Width="16" Height="16" Stretch="Uniform"
+                                      Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Mi Biblioteca"
+                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -159,31 +192,35 @@
                                     <!-- Portada -->
                                     <Border Height="220" CornerRadius="12,12,0,0"
                                             Background="{StaticResource SurfaceLightBrush}">
-                                        <TextBlock Text="📖" FontSize="48"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"/>
+                                        <Path Data="{StaticResource IconBook}"
+                                              Fill="{StaticResource TextSecondaryBrush}"
+                                              Width="40" Height="40" Stretch="Uniform"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                                     </Border>
                                     <!-- Datos -->
-                                    <StackPanel Margin="12">
+                                    <StackPanel Margin="10,8,10,10">
                                         <TextBlock Text="{Binding Title}" Style="{StaticResource TextBody}"
                                                    FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
-                                                   MaxHeight="40" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                                   MaxHeight="36" TextWrapping="Wrap" Margin="0,0,0,4"/>
                                         <TextBlock Text="{Binding Author}" Style="{StaticResource TextCaption}"
-                                                   TextTrimming="CharacterEllipsis" Margin="0,0,0,8"/>
-                                        <Grid>
-                                            <TextBlock Style="{StaticResource TextBody}" FontWeight="Bold"
-                                                       Foreground="{StaticResource PrimaryBrush}">
-                                                <Run Text="$"/>
-                                                <Run Text="{Binding Price, StringFormat='{}{0:F2}'}"/>
-                                            </TextBlock>
-                                            <TextBlock Text="{Binding CategoryName}"
-                                                       Style="{StaticResource TextCaption}"
-                                                       HorizontalAlignment="Right"/>
-                                        </Grid>
+                                                   TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="0,0,0,8"/>
+                                        
+                                        <TextBlock Style="{StaticResource TextBody}" FontWeight="Bold"
+                                                   Foreground="{StaticResource PrimaryBrush}"
+                                                   TextWrapping="NoWrap">
+                                            <Run Text="$"/>
+                                            <Run Text="{Binding Price, StringFormat='{}{0:F2}'}"/>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding CategoryName}"
+                                                   Style="{StaticResource TextCaption}"
+                                                   TextWrapping="NoWrap"
+                                                   Margin="0,0,0,4"/>
+                                        
                                         <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                                            <TextBlock Text="★" Foreground="{StaticResource WarningBrush}"
-                                                       FontSize="12" VerticalAlignment="Center"/>
-                                            <TextBlock Style="{StaticResource TextCaption}" Margin="4,0,0,0">
+                                            <Path Data="{StaticResource IconStar}" Fill="{StaticResource WarningBrush}"
+                                                  Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center"/>
+                                            <TextBlock Style="{StaticResource TextCaption}" Margin="4,0,0,0" TextWrapping="NoWrap">
                                                 <Run Text="{Binding AverageRating, StringFormat='{}{0:F1}'}"/>
                                                 <Run Text=" ("/>
                                                 <Run Text="{Binding ReviewCount}"/>
@@ -201,24 +238,34 @@
             <!-- Paginación -->
             <Border Grid.Row="2" Padding="24,12" Background="{StaticResource SurfaceBrush}">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Content="← Anterior"
-                            Command="{Binding PreviousPageCommand}"
+                    <Button Command="{Binding PreviousPageCommand}"
                             Background="{StaticResource SurfaceLightBrush}"
                             Foreground="{StaticResource TextPrimaryBrush}"
                             BorderThickness="0" Padding="16,8" Margin="0,0,8,0"
-                            IsEnabled="{Binding HasPreviousPage}"/>
+                            IsEnabled="{Binding HasPreviousPage}">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Path Data="{StaticResource IconArrowLeft}" Fill="{StaticResource TextPrimaryBrush}"
+                                  Width="14" Height="14" Stretch="Uniform" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Anterior" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                     <TextBlock VerticalAlignment="Center" Margin="8,0" Style="{StaticResource TextBody}">
                         <Run Text="Página"/>
                         <Run Text="{Binding CurrentPage, Mode=OneWay}"/>
                         <Run Text="de"/>
                         <Run Text="{Binding TotalPages, Mode=OneWay}"/>
                     </TextBlock>
-                    <Button Content="Siguiente →"
-                            Command="{Binding NextPageCommand}"
+                    <Button Command="{Binding NextPageCommand}"
                             Background="{StaticResource SurfaceLightBrush}"
                             Foreground="{StaticResource TextPrimaryBrush}"
                             BorderThickness="0" Padding="16,8" Margin="8,0,0,0"
-                            IsEnabled="{Binding HasNextPage}"/>
+                            IsEnabled="{Binding HasNextPage}">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="Siguiente" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                            <Path Data="{StaticResource IconArrowRight}" Fill="{StaticResource TextPrimaryBrush}"
+                                  Width="14" Height="14" Stretch="Uniform" Margin="4,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Border>
         </Grid>

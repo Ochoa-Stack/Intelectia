@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Intelectia.Shared.DTOs.Marketplace;
@@ -30,7 +30,7 @@ public partial class VendorDashboardViewModel : BaseViewModel
     [ObservableProperty]
     private string _successMessage = string.Empty;
 
-    // Campos del formulario de publicación
+    // Campos del formulario de publicaciÃ³n
     [ObservableProperty]
     private string _bookTitle = string.Empty;
 
@@ -102,7 +102,7 @@ public partial class VendorDashboardViewModel : BaseViewModel
 
             SelectedCategory = Categories.FirstOrDefault();
         }
-        catch { }
+        catch (System.Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
     }
 
     [RelayCommand]
@@ -142,7 +142,7 @@ public partial class VendorDashboardViewModel : BaseViewModel
         {
             Stats = await _vendorService.GetStatsAsync();
         }
-        catch { }
+        catch (System.Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
     }
 
     // Publica el libro con los datos del formulario
@@ -171,7 +171,7 @@ public partial class VendorDashboardViewModel : BaseViewModel
             var book = await _vendorService.PublishBookAsync(request);
             Books.Insert(0, book);
 
-            SuccessMessage = $"'{book.Title}' publicado exitosamente en el catálogo.";
+            SuccessMessage = $"'{book.Title}' publicado exitosamente en el catÃ¡logo.";
             OnPropertyChanged(nameof(HasSuccess));
             OnPropertyChanged(nameof(HasBooks));
 
@@ -185,7 +185,7 @@ public partial class VendorDashboardViewModel : BaseViewModel
             BookPrice         = 0;
             ShowPublishForm   = false;
 
-            // Actualizamos las estadísticas
+            // Actualizamos las estadÃ­sticas
             await LoadStatsAsync();
         }
         catch (ApiException ex)
@@ -228,3 +228,4 @@ public partial class VendorDashboardViewModel : BaseViewModel
         _navigationService.NavigateTo(vm);
     }
 }
+

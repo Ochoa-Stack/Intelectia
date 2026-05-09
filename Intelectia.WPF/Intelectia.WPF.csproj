@@ -1,6 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
   <ItemGroup>
     <ProjectReference Include="..\Intelectia.Shared\Intelectia.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\OAuthCallback.html"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AdysTech.CredentialManager" Version="3.1.0" />

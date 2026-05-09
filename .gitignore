@@ -483,7 +483,19 @@ $RECYCLE.BIN/
 
 # Entorno local, perfiles de ejecución y datos sensibles
 **/appsettings.Development.json
-   **/secrets.json
-   **/.env
-   **/launchSettings.json
+**/secrets.json
+**/.env
+**/launchSettings.json
+Backup/
+/Backup/
+**/Backup/
+Intelectia.WPF/Backup/
+Intelectia.Application/Backup/
+Intelectia.Infrastructure/Backup/
 
+# Herramientas temporales generadas durante el desarrollo
+FixEncoding/
+FixEncoding*/
+fix_encoding.ps1
+seed_log.txt
+seed_error.txt

@@ -7,9 +7,11 @@
         <StackPanel>
 
             <!-- Ícono y título -->
-            <TextBlock Text="🏪" FontSize="56"
-                       HorizontalAlignment="Center"
-                       Margin="0,0,0,16"/>
+            <Path Data="{StaticResource IconStore}"
+                  Fill="{StaticResource PrimaryBrush}"
+                  Width="56" Height="56" Stretch="Uniform"
+                  HorizontalAlignment="Center"
+                  Margin="0,0,0,16"/>
 
             <TextBlock Text="Conviértete en vendedor"
                        Style="{StaticResource TextHeading}"
@@ -32,20 +34,12 @@
                                Style="{StaticResource TextCaption}"
                                Margin="0,0,0,4"/>
                     <TextBox Text="{Binding BusinessName, UpdateSourceTrigger=PropertyChanged}"
-                             Background="{StaticResource SurfaceLightBrush}"
-                             Foreground="{StaticResource TextPrimaryBrush}"
-                             BorderBrush="{StaticResource BorderBrush}"
-                             Padding="12,10" BorderThickness="1"
                              Margin="0,0,0,16"/>
 
                     <TextBlock Text="Descripción (opcional)"
                                Style="{StaticResource TextCaption}"
                                Margin="0,0,0,4"/>
                     <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
-                             Background="{StaticResource SurfaceLightBrush}"
-                             Foreground="{StaticResource TextPrimaryBrush}"
-                             BorderBrush="{StaticResource BorderBrush}"
-                             Padding="12,10" BorderThickness="1"
                              AcceptsReturn="True" TextWrapping="Wrap"
                              MinHeight="80"
                              Margin="0,0,0,16"/>

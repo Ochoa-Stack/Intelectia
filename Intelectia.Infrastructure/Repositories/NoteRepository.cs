@@ -20,7 +20,8 @@ public class NoteRepository : INoteRepository
         Guid userId, Guid? bookId, CancellationToken cancellationToken = default)
     {
         var query = _context.Notes
-            .Where(n => n.UserId == userId && !n.IsDeleted);
+            .Include(n => n.Book)
+            .Where(n => n.UserId == userId);
 
         if (bookId.HasValue)
             query = query.Where(n => n.BookId == bookId.Value);
@@ -32,7 +33,7 @@ public class NoteRepository : INoteRepository
 
     public Task<Note?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => _context.Notes
-            .FirstOrDefaultAsync(n => n.Id == id && !n.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(n => n.Id == id, cancellationToken);
 
     public async Task AddAsync(Note note, CancellationToken cancellationToken = default)
         => await _context.Notes.AddAsync(note, cancellationToken);

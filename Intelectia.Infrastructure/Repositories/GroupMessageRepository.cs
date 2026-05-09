@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Intelectia.Domain.Entities;
 using Intelectia.Domain.Interfaces.Repositories;
 using Intelectia.Infrastructure.Persistence;
@@ -20,7 +20,7 @@ public class GroupMessageRepository : IGroupMessageRepository
     {
         var query = _context.GroupMessages
             .Include(m => m.User)
-            .Where(m => m.GroupId == groupId && !m.IsDeleted);
+            .Where(m => m.GroupId == groupId);
 
         var totalCount = await query.CountAsync(cancellationToken);
 
