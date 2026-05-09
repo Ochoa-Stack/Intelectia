@@ -168,54 +168,64 @@ public partial class MarketplaceViewModel : BaseViewModel
     [RelayCommand]
     private async Task OpenBookAsync(BookSummaryDto book)
     {
-        var vm = _bookDetailVmFactory();
-        await vm.LoadAsync(book.Id);
-        _navigationService.NavigateTo(vm);
+        try {
+            var vm = _bookDetailVmFactory();
+            await vm.LoadAsync(book.Id);
+            _navigationService.NavigateTo(vm);
+        } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
     }
 
     // Navega a la biblioteca personal del usuario
     [RelayCommand]
     private async Task GoToLibraryAsync()
     {
-        var vm = _libraryVmFactory();
-        await vm.InitializeAsync();
-        _navigationService.NavigateTo(vm);
+        try {
+            var vm = _libraryVmFactory();
+            await vm.InitializeAsync();
+            _navigationService.NavigateTo(vm);
+        } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
     }
 
     // Comando actualizado; detecta si tiene perfil antes de navegar
     [RelayCommand]
     private async Task GoToVendorDashboardAsync()
     {
-        // Leemos el estado del perfil de vendedor desde la sesión activa
-        var isVendor = _authService.CurrentSession?.User.IsVendor ?? false;
+        try {
+            // Leemos el estado del perfil de vendedor desde la sesión activa
+            var isVendor = _authService.CurrentSession?.User.IsVendor ?? false;
 
-        if (!isVendor)
-        {
-            // Sin perfil -> pantalla de activación
-            _navigationService.NavigateTo(_vendorOnboardingVmFactory());
-            return;
-        }
+            if (!isVendor)
+            {
+                // Sin perfil -> pantalla de activación
+                _navigationService.NavigateTo(_vendorOnboardingVmFactory());
+                return;
+            }
 
-        // Con perfil -> dashboard directo
-        var vm = _vendorVmFactory();
-        await vm.InitializeAsync();
-        _navigationService.NavigateTo(vm);
+            // Con perfil -> dashboard directo
+            var vm = _vendorVmFactory();
+            await vm.InitializeAsync();
+            _navigationService.NavigateTo(vm);
+        } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
     }
 
     [RelayCommand]
     private async Task GoToGroupsAsync()
     {
-        var vm = _groupsVmFactory();
-        await vm.InitializeAsync();
-        _navigationService.NavigateTo(vm);
+        try {
+            var vm = _groupsVmFactory();
+            await vm.InitializeAsync();
+            _navigationService.NavigateTo(vm);
+        } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
     }
 
     [RelayCommand]
     private async Task GoToProfileAsync()
     {
-        var vm = _profileVmFactory();
-        await vm.InitializeAsync();
-        _navigationService.NavigateTo(vm);
+        try {
+            var vm = _profileVmFactory();
+            await vm.InitializeAsync();
+            _navigationService.NavigateTo(vm);
+        } catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
     }
 
     partial void OnSelectedCategoryChanged(CategoryDto? value)

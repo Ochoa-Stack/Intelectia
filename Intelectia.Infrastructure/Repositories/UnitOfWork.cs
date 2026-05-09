@@ -1,4 +1,4 @@
-using Intelectia.Domain.Interfaces;
+﻿using Intelectia.Domain.Interfaces;
 using Intelectia.Infrastructure.Persistence;
 
 namespace Intelectia.Infrastructure.Repositories;

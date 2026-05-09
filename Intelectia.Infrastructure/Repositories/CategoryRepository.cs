@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Intelectia.Domain.Entities;
 using Intelectia.Domain.Interfaces.Repositories;
 using Intelectia.Infrastructure.Persistence;
@@ -17,11 +17,11 @@ public class CategoryRepository : ICategoryRepository
     // Trae todas las categorías activas ordenadas por nombre
     public async Task<IReadOnlyList<Category>> GetAllAsync(CancellationToken cancellationToken = default)
         => await _context.Categories
-            .Where(c => !c.IsDeleted)
+            
             .OrderBy(c => c.Name)
             .ToListAsync(cancellationToken);
 
     public Task<Category?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => _context.Categories
-            .FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 }

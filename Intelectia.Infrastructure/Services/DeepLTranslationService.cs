@@ -32,17 +32,25 @@ public class DeepLTranslationService : ITranslationService
         // Instanciamos el translator aquí para evitar capturar la ApiKey en el constructor
         var translator = new Translator(apiKey);
 
-        // DeepL detecta el idioma origen automáticamente si sourceLanguage es null
-        var result = await translator.TranslateTextAsync(
-            text,
-            sourceLanguage,
-            targetLanguage,
-            cancellationToken: cancellationToken);
+        try
+        {
+            // DeepL detecta el idioma origen automáticamente si sourceLanguage es null
+            var result = await translator.TranslateTextAsync(
+                text,
+                sourceLanguage,
+                targetLanguage,
+                cancellationToken: cancellationToken);
 
-        _logger.LogInformation(
-            "Traducción completada: {Chars} caracteres ({From} → {To})",
-            text.Length, sourceLanguage ?? "auto", targetLanguage);
+            _logger.LogInformation(
+                "Traducción completada: {Chars} caracteres ({From} → {To})",
+                text.Length, sourceLanguage ?? "auto", targetLanguage);
 
-        return result.Text;
+            return result.Text;
+        }
+        catch (DeepLException ex)
+        {
+            _logger.LogError(ex, "Error al traducir con DeepL");
+            throw new InvalidOperationException("No se pudo completar la traducción en este momento.", ex);
+        }
     }
 }

@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Intelectia.Domain.Entities;
 using Intelectia.Domain.Interfaces.Repositories;
 using Intelectia.Infrastructure.Persistence;
@@ -19,7 +19,7 @@ public class CitationRepository : ICitationRepository
     {
         var query = _context.Citations
             .Include(c => c.Book)
-            .Where(c => c.UserId == userId && !c.IsDeleted);
+            .Where(c => c.UserId == userId);
 
         if (bookId.HasValue)
             query = query.Where(c => c.BookId == bookId.Value);
@@ -32,7 +32,7 @@ public class CitationRepository : ICitationRepository
     public Task<Citation?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => _context.Citations
             .Include(c => c.Book)
-            .FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 
     public async Task AddAsync(Citation citation, CancellationToken cancellationToken = default)
         => await _context.Citations.AddAsync(citation, cancellationToken);

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelectia - Autenticación completada</title>
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: #0E1311;
+            color: #E8EDE9;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            text-align: center;
+            padding: 48px 56px;
+            background: #161D1A;
+            border: 1px solid #253428;
+            border-radius: 12px;
+            max-width: 420px;
+            width: 90%;
+        }
+
+        .icon-wrapper {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #2C5530;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .icon-wrapper svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #E8EDE9;
+        }
+
+        p {
+            font-size: 14px;
+            color: #8A9E8D;
+            line-height: 1.5;
+        }
+
+        .countdown {
+            margin-top: 24px;
+            font-size: 12px;
+            color: #8A9E8D;
+            opacity: 0.7;
+        }
+
+        .brand {
+            margin-top: 32px;
+            font-size: 11px;
+            color: #253428;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#E8EDE9" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+            </svg>
+        </div>
+        <h2>Autenticación completada</h2>
+        <p>Tu cuenta de Google se ha verificado correctamente.<br>
+            Puedes volver a Intelectia.</p>
+        <p class="countdown" id="msg">Cerrando esta ventana...</p>
+        <p class="brand">Intelectia</p>
+    </div>
+    <script>
+        setTimeout(function () { window.close(); }, 1800);
+    </script>
+</body>
+
+</html>

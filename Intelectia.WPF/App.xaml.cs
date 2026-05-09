@@ -11,7 +11,7 @@ public partial class App : Application
 {
     public static IServiceProvider Services { get; private set; } = null!;
 
-    protected override async void OnStartup(StartupEventArgs e)
+    protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
@@ -26,20 +26,32 @@ public partial class App : Application
         var mainWindow = new MainWindow { DataContext = mainViewModel };
         mainWindow.Show();
 
-        // Intentamos restaurar la sesión guardada antes de mostrar el login
-        var authService = Services.GetRequiredService<AuthService>();
-        var sessionRestored = await authService.TryRestoreSessionAsync();
+        // Llamada fire-and-forget segura a inicialización asíncrona
+        _ = InitializeAsync(navigation);
+    }
 
-        if (sessionRestored)
+    private async Task InitializeAsync(NavigationService navigation)
+    {
+        try
         {
-            // Sesión restaurada — vamos directo al Marketplace
-            var marketplaceVm = Services.GetRequiredService<MarketplaceViewModel>();
-            await marketplaceVm.InitializeAsync();
-            navigation.NavigateTo(marketplaceVm);
+            var authService = Services.GetRequiredService<AuthService>();
+            var sessionRestored = await authService.TryRestoreSessionAsync();
+
+            if (sessionRestored)
+            {
+                var marketplaceVm = Services.GetRequiredService<MarketplaceViewModel>();
+                await marketplaceVm.InitializeAsync();
+                navigation.NavigateTo(marketplaceVm);
+            }
+            else
+            {
+                navigation.NavigateTo(Services.GetRequiredService<LoginViewModel>());
+            }
         }
-        else
+        catch (Exception ex)
         {
-            // Sin sesión guardada — mostramos el login
+            // Log error or show message
+            System.Diagnostics.Debug.WriteLine($"Error al iniciar: {ex.Message}");
             navigation.NavigateTo(Services.GetRequiredService<LoginViewModel>());
         }
     }

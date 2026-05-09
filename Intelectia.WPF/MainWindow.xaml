@@ -9,8 +9,9 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>  <!-- banner sin conexión -->
+            <RowDefinition Height="*"/>     <!-- contenido principal -->
+            <RowDefinition Height="20"/>    <!-- footer de créditos -->
         </Grid.RowDefinitions>
 
         <!-- Banner de sin conexión -->
@@ -18,10 +19,13 @@
                 Background="{StaticResource WarningBrush}"
                 Padding="16,8"
                 Visibility="{Binding IsOffline, Converter={StaticResource BoolToVisibilityConverter}}">
-            <TextBlock Text="⚠ Sin conexión a internet. Algunas funciones pueden no estar disponibles."
-                       Foreground="#1A1A2E"
-                       FontSize="13"
-                       HorizontalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Path Data="{StaticResource IconWarning}"
+                      Fill="#1A1A2E" Width="16" Height="16" Stretch="Uniform"
+                      Margin="0,0,8,0" VerticalAlignment="Center"/>
+                <TextBlock Text="Sin conexión a internet. Algunas funciones pueden no estar disponibles."
+                           Foreground="#1A1A2E" FontSize="13" VerticalAlignment="Center"/>
+            </StackPanel>
         </Border>
 
         <!-- Contenido principal -->
@@ -30,8 +34,8 @@
                         Style="{StaticResource FadeContentControl}"
                         Content="{Binding CurrentViewModel}"/>
 
-        <!-- Sistema de toasts, se encuentra superpuesto sobre todo el contenido -->
-        <ItemsControl Grid.Row="0" Grid.RowSpan="2"
+        <!-- Sistema de toasts, superpuesto sobre todo el contenido -->
+        <ItemsControl Grid.Row="0" Grid.RowSpan="3"
                       ItemsSource="{Binding Toasts}"
                       VerticalAlignment="Bottom"
                       HorizontalAlignment="Right"
@@ -66,6 +70,21 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+
+        <!-- Footer de créditos -->
+        <Border Grid.Row="2"
+                Background="{StaticResource SurfaceBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,1,0,0">
+            <TextBlock Text="Developed by: Elias Ochoa"
+                       FontFamily="{StaticResource FontInter}"
+                       FontSize="10"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Margin="0,0,16,0"
+                       Opacity="0.6"/>
+        </Border>
 
     </Grid>
 </Window>

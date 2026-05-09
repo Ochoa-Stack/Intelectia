@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Intelectia.Domain.Entities;
 using Intelectia.Domain.Interfaces.Repositories;
 using Intelectia.Infrastructure.Persistence;
@@ -18,10 +18,9 @@ public class GroupRepository : IGroupRepository
     public async Task<IReadOnlyList<StudyGroup>> GetByUserIdAsync(
         Guid userId, CancellationToken cancellationToken = default)
         => await _context.StudyGroups
-            .Include(g => g.Members.Where(m => !m.IsDeleted))
+            .Include(g => g.Members)
                 .ThenInclude(m => m.User)
-            .Where(g => !g.IsDeleted &&
-                        g.Members.Any(m => m.UserId == userId && !m.IsDeleted))
+            .Where(g => g.Members.Any(m => m.UserId == userId))
             .OrderByDescending(g => g.CreatedAt)
             .ToListAsync(cancellationToken);
 
@@ -30,10 +29,9 @@ public class GroupRepository : IGroupRepository
         Guid userId, string? search, CancellationToken cancellationToken = default)
     {
         var query = _context.StudyGroups
-            .Include(g => g.Members.Where(m => !m.IsDeleted))
-            .Where(g => !g.IsDeleted &&
-                        g.IsPublic &&
-                        !g.Members.Any(m => m.UserId == userId && !m.IsDeleted));
+            .Include(g => g.Members)
+            .Where(g => g.IsPublic &&
+                        !g.Members.Any(m => m.UserId == userId));
 
         if (!string.IsNullOrWhiteSpace(search))
             query = query.Where(g => g.Name.ToLower().Contains(search.ToLower()));
@@ -47,9 +45,9 @@ public class GroupRepository : IGroupRepository
     public Task<StudyGroup?> GetByIdWithMembersAsync(
         Guid id, CancellationToken cancellationToken = default)
         => _context.StudyGroups
-            .Include(g => g.Members.Where(m => !m.IsDeleted))
+            .Include(g => g.Members)
                 .ThenInclude(m => m.User)
-            .FirstOrDefaultAsync(g => g.Id == id && !g.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(g => g.Id == id, cancellationToken);
 
     public async Task AddAsync(StudyGroup group, CancellationToken cancellationToken = default)
         => await _context.StudyGroups.AddAsync(group, cancellationToken);

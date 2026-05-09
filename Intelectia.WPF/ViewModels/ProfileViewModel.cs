@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Intelectia.Shared.DTOs.Profile;
 using Intelectia.WPF.Core;
 using Intelectia.WPF.Services;
+using Intelectia.WPF.ViewModels.Auth;
 
 namespace Intelectia.WPF.ViewModels;
 
@@ -11,6 +12,8 @@ public partial class ProfileViewModel : BaseViewModel
     private readonly ProfileService _profileService;
     private readonly NavigationService _navigationService;
     private readonly Func<MarketplaceViewModel> _marketplaceVmFactory;
+    private readonly AuthService _authService;
+    private readonly Func<LoginViewModel> _loginVmFactory;
 
     [ObservableProperty]
     private string _firstName = string.Empty;
@@ -54,11 +57,15 @@ public partial class ProfileViewModel : BaseViewModel
     public ProfileViewModel(
         ProfileService profileService,
         NavigationService navigationService,
-        Func<MarketplaceViewModel> marketplaceVmFactory)
+        Func<MarketplaceViewModel> marketplaceVmFactory,
+        AuthService authService,
+        Func<LoginViewModel> loginVmFactory)
     {
         _profileService       = profileService;
         _navigationService    = navigationService;
         _marketplaceVmFactory = marketplaceVmFactory;
+        _authService          = authService;
+        _loginVmFactory       = loginVmFactory;
         Title = "Mi Perfil";
     }
 
@@ -171,5 +178,12 @@ public partial class ProfileViewModel : BaseViewModel
         var vm = _marketplaceVmFactory();
         await vm.InitializeAsync();
         _navigationService.NavigateTo(vm);
+    }
+
+    [RelayCommand]
+    private async Task LogoutAsync()
+    {
+        await _authService.LogoutAsync();
+        _navigationService.NavigateTo(_loginVmFactory());
     }
 }

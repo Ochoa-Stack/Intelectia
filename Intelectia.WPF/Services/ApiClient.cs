@@ -75,17 +75,15 @@ public class ApiClient
     {
         if (response.IsSuccessStatusCode) return;
 
-        // 401 — sesión expirada: limpiamos la sesión y redirigimos al login
         if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {
             var toast = _serviceProvider.GetService<ToastService>();
             toast?.Warning("Tu sesión expiró. Inicia sesión nuevamente.");
 
-            // Resolvemos AuthService aquí para evitar la dependencia circular en constructor
             var auth = _serviceProvider.GetService<AuthService>();
             auth?.ClearSession();
 
-            var nav = _serviceProvider.GetService<NavigationService>();
+            var nav     = _serviceProvider.GetService<NavigationService>();
             var loginVm = _serviceProvider.GetService<Func<Intelectia.WPF.ViewModels.Auth.LoginViewModel>>();
             if (nav is not null && loginVm is not null)
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
@@ -99,8 +97,35 @@ public class ApiClient
         try
         {
             using var doc = JsonDocument.Parse(content);
-            var message = doc.RootElement.GetProperty("message").GetString()
-                ?? "Error desconocido.";
+            var root      = doc.RootElement;
+
+            // Leemos el mensaje principal
+            var message = root.TryGetProperty("message", out var msgProp)
+                ? msgProp.GetString() ?? "Error desconocido."
+                : "Error desconocido.";
+
+            // Si hay errores de validación por campo los concatenamos para mostrarlos
+            if (root.TryGetProperty("errors", out var errorsProp) &&
+                errorsProp.ValueKind == JsonValueKind.Object)
+            {
+                var fieldErrors = new List<string>();
+                foreach (var field in errorsProp.EnumerateObject())
+                {
+                    if (field.Value.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (var err in field.Value.EnumerateArray())
+                        {
+                            var errMsg = err.GetString();
+                            if (!string.IsNullOrEmpty(errMsg))
+                                fieldErrors.Add(errMsg);
+                        }
+                    }
+                }
+
+                if (fieldErrors.Count > 0)
+                    message = string.Join("\n", fieldErrors);
+            }
+
             throw new ApiException(message, (int)response.StatusCode);
         }
         catch (JsonException)

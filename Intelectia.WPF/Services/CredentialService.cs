@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using AdysTech.CredentialManager;
 
 namespace Intelectia.WPF.Services;
@@ -8,7 +8,7 @@ public class CredentialService
     // Clave bajo la que se guarda el refresh token en Windows Credential Manager
     private const string CredentialKey = "Intelectia_RefreshToken";
 
-    // Guarda el refresh token cifrado en el almacén de Windows
+    // Guarda el refresh token cifrado en el almacÃ©n de Windows
     public void SaveRefreshToken(string token)
     {
         try
@@ -22,7 +22,7 @@ public class CredentialService
         }
     }
 
-    // Recupera el refresh token guardado; null si no existe o falló
+    // Recupera el refresh token guardado; null si no existe o fallÃ³
     public string? LoadRefreshToken()
     {
         try
@@ -36,13 +36,14 @@ public class CredentialService
         }
     }
 
-    // Elimina el refresh token al cerrar sesión
+    // Elimina el refresh token al cerrar sesiÃ³n
     public void DeleteRefreshToken()
     {
         try
         {
             CredentialManager.RemoveCredentials(CredentialKey);
         }
-        catch { }
+        catch (System.Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
     }
 }
+

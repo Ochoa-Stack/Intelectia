@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Intelectia.Domain.Entities;
 using Intelectia.Domain.Enums;
 using Intelectia.Domain.Interfaces.Repositories;
@@ -30,7 +30,7 @@ public class BookRepository : IBookRepository
         var query = _context.Books
             .Include(b => b.Category)
             .Include(b => b.VendorProfile)
-            .Where(b => !b.IsDeleted && b.Status == BookStatus.Active)
+            .Where(b => b.Status == BookStatus.Active)
             .AsQueryable();
 
         // Aplicamos el filtro de búsqueda por título o autor
@@ -82,7 +82,7 @@ public class BookRepository : IBookRepository
             .Include(b => b.VendorProfile)
             .Include(b => b.Reviews)
                 .ThenInclude(r => r.User)
-            .FirstOrDefaultAsync(b => b.Id == id && !b.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
 
     public async Task AddAsync(Book book, CancellationToken cancellationToken = default)
         => await _context.Books.AddAsync(book, cancellationToken);
