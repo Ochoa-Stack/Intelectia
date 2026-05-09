@@ -113,13 +113,13 @@ Intelectia/
 **1. Clonar el repositorio**
 
 ```bash
-git clone https://github.com/<tu-usuario>/Intelectia.git
+git clone https://github.com/Ochoa-Stack/Intelectia.git
 cd Intelectia
 ```
 
 **2. Abrir la solución**
 
-Abrir `Intelectia.slnx` en Visual Studio 2022.
+Abrir `Intelectia.slnx` en Visual Studio.
 
 **3. Configurar user-secrets para `Intelectia.API`**
 
