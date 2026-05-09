@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Intelectia.Domain.Entities;
 using Intelectia.Domain.Interfaces.Repositories;
 using Intelectia.Infrastructure.Persistence;
@@ -20,7 +20,7 @@ public class CartRepository : ICartRepository
             .Include(c => c.Items)
                 .ThenInclude(i => i.Book)
                     .ThenInclude(b => b.Category)
-            .FirstOrDefaultAsync(c => c.UserId == userId && !c.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
 
     public async Task AddAsync(Cart cart, CancellationToken cancellationToken = default)
         => await _context.Carts.AddAsync(cart, cancellationToken);

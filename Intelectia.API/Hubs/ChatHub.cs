@@ -24,13 +24,32 @@ public class ChatHub : Hub
     // El cliente se une al canal SignalR del grupo
     public async Task JoinGroup(string groupId)
     {
+        var userId = GetUserId();
+        var groupGuid = Guid.Parse(groupId);
+        var isMember = await _context.GroupMembers
+            .AnyAsync(m => m.GroupId == groupGuid && m.UserId == userId);
+
+        if (!isMember)
+        {
+            await Clients.Caller.SendAsync("Error", "No eres miembro de este grupo.");
+            return;
+        }
+
         await Groups.AddToGroupAsync(Context.ConnectionId, groupId);
     }
 
     // El cliente abandona el canal del grupo
     public async Task LeaveGroup(string groupId)
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
+        var userId = GetUserId();
+        var groupGuid = Guid.Parse(groupId);
+        var isMember = await _context.GroupMembers
+            .AnyAsync(m => m.GroupId == groupGuid && m.UserId == userId);
+
+        if (isMember)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupId);
+        }
     }
 
     // El cliente envía un mensaje al grupo

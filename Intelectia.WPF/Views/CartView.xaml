@@ -1,4 +1,4 @@
-<UserControl x:Class="Intelectia.WPF.Views.CartView"
+﻿<UserControl x:Class="Intelectia.WPF.Views.CartView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="{StaticResource BackgroundBrush}">
@@ -12,11 +12,20 @@
         <!-- Header -->
         <Border Grid.Row="0" Padding="24,16" Background="{StaticResource SurfaceBrush}">
             <StackPanel Orientation="Horizontal">
-                <Button Content="← Marketplace"
-                        Command="{Binding ContinueShoppingCommand}"
+                <Button Command="{Binding ContinueShoppingCommand}"
                         Background="Transparent"
                         Foreground="{StaticResource PrimaryBrush}"
-                        BorderThickness="0" Padding="0" Margin="0,0,24,0"/>
+                        BorderThickness="0" Padding="0" Margin="0,0,24,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Path Data="{StaticResource IconArrowLeft}"
+                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                              Width="14" Height="14" Stretch="Uniform"
+                              Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Marketplace"
+                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
                 <TextBlock Text="{Binding Title}" Style="{StaticResource TextHeading}"
                            VerticalAlignment="Center"/>
             </StackPanel>
@@ -29,7 +38,10 @@
                 <!-- Carrito vacío -->
                 <StackPanel HorizontalAlignment="Center" Margin="0,60"
                             Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibilityConverter}}">
-                    <TextBlock Text="🛒" FontSize="48" HorizontalAlignment="Center"/>
+                    <Path Data="{StaticResource IconCart}"
+                          Fill="{StaticResource TextSecondaryBrush}"
+                          Width="48" Height="48" Stretch="Uniform"
+                          HorizontalAlignment="Center"/>
                     <TextBlock Text="Tu carrito está vacío"
                                Style="{StaticResource TextSubhead}"
                                HorizontalAlignment="Center" Margin="0,16,0,8"/>
@@ -63,9 +75,11 @@
                                     <Border Grid.Column="0" Width="50" Height="65"
                                             Background="{StaticResource SurfaceBrush}"
                                             CornerRadius="4">
-                                        <TextBlock Text="📖" FontSize="24"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"/>
+                                        <Path Data="{StaticResource IconBook}"
+                                              Fill="{StaticResource TextSecondaryBrush}"
+                                              Width="24" Height="24" Stretch="Uniform"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                                     </Border>
 
                                     <!-- Datos del libro -->
@@ -94,16 +108,17 @@
                                     </TextBlock>
 
                                     <!-- Botón eliminar -->
-                                    <Button Grid.Column="3"
-                                            Content="✕"
-                                            Command="{Binding DataContext.RemoveItemCommand,
+                                            <Button Command="{Binding DataContext.RemoveItemCommand,
                                                 RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                            CommandParameter="{Binding}"
-                                            Background="Transparent"
-                                            Foreground="{StaticResource ErrorBrush}"
-                                            BorderThickness="0"
-                                            FontSize="16" Padding="8"
-                                            VerticalAlignment="Center"/>
+                                                CommandParameter="{Binding}"
+                                                Background="Transparent"
+                                                Foreground="{StaticResource ErrorBrush}"
+                                                BorderThickness="0"
+                                                Padding="8"
+                                                VerticalAlignment="Center">
+                                                <Path Data="{StaticResource IconX}" Fill="{StaticResource ErrorBrush}"
+                                                      Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                                            </Button>
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -140,12 +155,17 @@
                             Background="Transparent"
                             Foreground="{StaticResource TextSecondaryBrush}"
                             BorderThickness="0" Padding="16,10" Margin="0,0,8,0"/>
-                    <Button Content="Proceder al pago →"
-                            Command="{Binding ProceedToCheckoutCommand}"
+                    <Button Command="{Binding ProceedToCheckoutCommand}"
                             Background="{StaticResource PrimaryBrush}"
                             Foreground="{StaticResource TextPrimaryBrush}"
                             BorderThickness="0" Padding="24,10"
-                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"/>
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="Proceder al pago " Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                            <Path Data="{StaticResource IconArrowRight}" Fill="{StaticResource TextPrimaryBrush}"
+                                  Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </Grid>
         </Border>

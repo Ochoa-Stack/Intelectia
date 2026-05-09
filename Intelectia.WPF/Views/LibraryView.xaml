@@ -12,11 +12,20 @@
         <!-- Header -->
         <Border Grid.Row="0" Padding="24,16" Background="{StaticResource SurfaceBrush}">
             <StackPanel Orientation="Horizontal">
-                <Button Content="← Marketplace"
-                        Command="{Binding GoToMarketplaceCommand}"
+                <Button Command="{Binding GoToMarketplaceCommand}"
                         Background="Transparent"
                         Foreground="{StaticResource PrimaryBrush}"
-                        BorderThickness="0" Padding="0" Margin="0,0,24,0"/>
+                        BorderThickness="0" Padding="0" Margin="0,0,24,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Path Data="{StaticResource IconArrowLeft}"
+                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                              Width="14" Height="14" Stretch="Uniform"
+                              Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Marketplace"
+                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
                 <TextBlock Text="Mi Biblioteca" Style="{StaticResource TextHeading}"
                            VerticalAlignment="Center"/>
             </StackPanel>
@@ -27,11 +36,19 @@
                 BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal" Margin="24,0">
 
-                <Button Content="📚 Mis Libros"
-                        Command="{Binding SwitchTabCommand}"
+                <Button Command="{Binding SwitchTabCommand}"
                         CommandParameter="books"
                         Background="Transparent"
                         Padding="0,12" Margin="0,0,24,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Path Data="{StaticResource IconBooks}"
+                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                              Width="14" Height="14" Stretch="Uniform"
+                              Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Mis Libros"
+                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="BorderThickness" Value="0,0,0,2"/>
@@ -47,11 +64,19 @@
                     </Button.Style>
                 </Button>
 
-                <Button Content="📝 Mis Notas"
-                        Command="{Binding SwitchTabCommand}"
+                <Button Command="{Binding SwitchTabCommand}"
                         CommandParameter="notes"
                         Background="Transparent"
                         Padding="0,12">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Path Data="{StaticResource IconNote}"
+                              Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                              Width="14" Height="14" Stretch="Uniform"
+                              Margin="0,0,6,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Mis Notas"
+                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
                     <Button.Style>
                         <Style TargetType="Button">
                             <Setter Property="BorderThickness" Value="0,0,0,2"/>
@@ -80,7 +105,10 @@
                     <!-- Estado vacío -->
                     <StackPanel HorizontalAlignment="Center" Margin="0,60"
                                 Visibility="{Binding HasBooks, Converter={StaticResource InverseBoolToVisibilityConverter}}">
-                        <TextBlock Text="📚" FontSize="48" HorizontalAlignment="Center"/>
+                        <Path Data="{StaticResource IconBooks}"
+                              Fill="{StaticResource TextSecondaryBrush}"
+                              Width="48" Height="48" Stretch="Uniform"
+                              HorizontalAlignment="Center"/>
                         <TextBlock Text="No tienes libros en tu biblioteca"
                                    Style="{StaticResource TextSubhead}"
                                    HorizontalAlignment="Center" Margin="0,16,0,8"/>
@@ -112,9 +140,11 @@
                                         <!-- Portada -->
                                         <Border Height="220" CornerRadius="12,12,0,0"
                                                 Background="{StaticResource SurfaceLightBrush}">
-                                            <TextBlock Text="📖" FontSize="48"
-                                                       HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center"/>
+                                            <Path Data="{StaticResource IconBook}"
+                                                  Fill="{StaticResource TextSecondaryBrush}"
+                                                  Width="40" Height="40" Stretch="Uniform"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
                                         </Border>
 
                                         <!-- Datos del libro -->
@@ -155,13 +185,18 @@
                 <StackPanel Visibility="{Binding IsNotesTab, Converter={StaticResource BoolToVisibilityConverter}}">
 
                     <!-- Botón nueva nota -->
-                    <Button Content="+ Nueva nota"
-                            Command="{Binding ToggleNoteFormCommand}"
+                    <Button Command="{Binding ToggleNoteFormCommand}"
                             Background="{StaticResource PrimaryBrush}"
                             Foreground="{StaticResource TextPrimaryBrush}"
                             BorderThickness="0" Padding="16,8"
                             HorizontalAlignment="Left"
-                            Margin="0,0,0,16"/>
+                            Margin="0,0,0,16">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Path Data="{StaticResource IconPlus}" Fill="{StaticResource TextPrimaryBrush}"
+                                  Width="14" Height="14" Stretch="Uniform" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Nueva nota" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
 
                     <!-- Formulario de nota nueva -->
                     <Border Background="{StaticResource SurfaceBrush}"
@@ -172,18 +207,10 @@
                                        Margin="0,0,0,12"/>
 
                             <TextBlock Text="Título" Style="{StaticResource TextCaption}" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding NewNoteTitle, UpdateSourceTrigger=PropertyChanged}"
-                                     Background="{StaticResource SurfaceLightBrush}"
-                                     Foreground="{StaticResource TextPrimaryBrush}"
-                                     BorderBrush="{StaticResource BorderBrush}"
-                                     Padding="10,8" BorderThickness="1" Margin="0,0,0,12"/>
+                            <TextBox Text="{Binding NewNoteTitle, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12"/>
 
                             <TextBlock Text="Contenido" Style="{StaticResource TextCaption}" Margin="0,0,0,4"/>
                             <TextBox Text="{Binding NewNoteContent, UpdateSourceTrigger=PropertyChanged}"
-                                     Background="{StaticResource SurfaceLightBrush}"
-                                     Foreground="{StaticResource TextPrimaryBrush}"
-                                     BorderBrush="{StaticResource BorderBrush}"
-                                     Padding="10,8" BorderThickness="1"
                                      AcceptsReturn="True" TextWrapping="Wrap"
                                      MinHeight="100" Margin="0,0,0,12"/>
 
@@ -206,7 +233,10 @@
                     <!-- Estado vacío de notas -->
                     <StackPanel HorizontalAlignment="Center" Margin="0,40"
                                 Visibility="{Binding HasNotes, Converter={StaticResource InverseBoolToVisibilityConverter}}">
-                        <TextBlock Text="📝" FontSize="48" HorizontalAlignment="Center"/>
+                        <Path Data="{StaticResource IconNote}"
+                              Fill="{StaticResource TextSecondaryBrush}"
+                              Width="48" Height="48" Stretch="Uniform"
+                              HorizontalAlignment="Center"/>
                         <TextBlock Text="No tienes notas todavía"
                                    Style="{StaticResource TextSubhead}"
                                    HorizontalAlignment="Center" Margin="0,16,0,0"/>
@@ -239,8 +269,7 @@
                                         </StackPanel>
 
                                         <!-- Botón eliminar -->
-                                        <Button Content="✕"
-                                                Command="{Binding DataContext.DeleteNoteCommand,
+                                        <Button Command="{Binding DataContext.DeleteNoteCommand,
                                                     RelativeSource={RelativeSource AncestorType=ItemsControl}}"
                                                 CommandParameter="{Binding}"
                                                 Background="Transparent"
@@ -248,7 +277,10 @@
                                                 BorderThickness="0"
                                                 HorizontalAlignment="Right"
                                                 VerticalAlignment="Top"
-                                                FontSize="14" Padding="8"/>
+                                                Padding="8">
+                                            <Path Data="{StaticResource IconX}" Fill="{StaticResource ErrorBrush}"
+                                                  Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                                        </Button>
                                     </Grid>
                                 </Border>
                             </DataTemplate>

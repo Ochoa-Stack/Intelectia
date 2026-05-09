@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Intelectia.Domain.Entities;
 using Intelectia.Domain.Interfaces.Repositories;
 using Intelectia.Infrastructure.Persistence;
@@ -21,7 +21,7 @@ public class OrderRepository : IOrderRepository
             .Include(o => o.Items)
                 .ThenInclude(i => i.Book)
             .Include(o => o.Payment)
-            .Where(o => o.UserId == userId && !o.IsDeleted)
+            .Where(o => o.UserId == userId)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync(cancellationToken);
 
@@ -32,7 +32,7 @@ public class OrderRepository : IOrderRepository
                 .ThenInclude(i => i.Book)
                     .ThenInclude(b => b.Category)
             .Include(o => o.Payment)
-            .FirstOrDefaultAsync(o => o.Id == id && !o.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
 
     // Busca el pedido usando el ID del PaymentIntent de Stripe; crítico para el webhook
     public Task<Order?> GetByPaymentIntentIdAsync(

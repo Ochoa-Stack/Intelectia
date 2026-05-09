@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -64,15 +64,15 @@ public partial class GroupChatViewModel : BaseViewModel
         {
             var result = await _groupsService.GetMessagesAsync(Group!.Id);
 
-            // Los mensajes vienen del más reciente al más antiguo; invertimos para mostrar cronológicamente
+            // Los mensajes vienen del mÃ¡s reciente al mÃ¡s antiguo; invertimos para mostrar cronolÃ³gicamente
             Messages.Clear();
             foreach (var msg in result.Items.Reverse())
                 Messages.Add(msg);
         }
-        catch { }
+        catch (System.Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
     }
 
-    // Establece la conexión con el Hub de SignalR
+    // Establece la conexiÃ³n con el Hub de SignalR
     private async Task ConnectToHubAsync()
     {
         try
@@ -80,7 +80,7 @@ public partial class GroupChatViewModel : BaseViewModel
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl("http://localhost:5028/hubs/chat", options =>
                 {
-                    // Inyectamos el token JWT en la conexión de SignalR
+                    // Inyectamos el token JWT en la conexiÃ³n de SignalR
                     options.AccessTokenProvider = () =>
                         Task.FromResult(_tokenStore.AccessToken);
                 })
@@ -103,10 +103,10 @@ public partial class GroupChatViewModel : BaseViewModel
             {
                 System.Windows.Application.Current.Dispatcher.Invoke(() =>
                 {
-                    TypingIndicator = "Alguien está escribiendo...";
+                    TypingIndicator = "Alguien estÃ¡ escribiendo...";
                 });
 
-                // Ocultamos el indicador después de 2 segundos
+                // Ocultamos el indicador despuÃ©s de 2 segundos
                 _ = Task.Delay(2000).ContinueWith(_ =>
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                         TypingIndicator = string.Empty));
@@ -124,7 +124,7 @@ public partial class GroupChatViewModel : BaseViewModel
         }
     }
 
-    // Envía el mensaje al Hub
+    // EnvÃ­a el mensaje al Hub
     [RelayCommand]
     private async Task SendMessageAsync()
     {
@@ -146,7 +146,7 @@ public partial class GroupChatViewModel : BaseViewModel
         }
     }
 
-    // Notifica al Hub que el usuario está escribiendo
+    // Notifica al Hub que el usuario estÃ¡ escribiendo
     [RelayCommand]
     private async Task NotifyTypingAsync()
     {
@@ -159,7 +159,7 @@ public partial class GroupChatViewModel : BaseViewModel
         {
             await _hubConnection.InvokeAsync("SendTyping", Group!.Id.ToString());
         }
-        catch { }
+        catch (System.Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
     }
 
     // Vuelve a la lista de grupos y desconecta el Hub
@@ -183,7 +183,7 @@ public partial class GroupChatViewModel : BaseViewModel
                 await _hubConnection.StopAsync();
                 await _hubConnection.DisposeAsync();
             }
-            catch { }
+            catch (System.Exception ex) { System.Diagnostics.Debug.WriteLine(ex); }
             finally
             {
                 _hubConnection = null;
@@ -191,3 +191,4 @@ public partial class GroupChatViewModel : BaseViewModel
         }
     }
 }
+

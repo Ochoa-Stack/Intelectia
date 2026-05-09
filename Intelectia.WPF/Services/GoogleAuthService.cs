@@ -37,6 +37,12 @@ public class GoogleAuthService
             $"api/auth/google/url?redirectUri={Uri.EscapeDataString(RedirectUri)}&state={state}",
             cancellationToken);
 
+        // Iniciamos el listener ANTES de abrir el browser para no perder el callback
+        var listenTask = ListenForCallbackAsync(state, cancellationToken);
+
+        // Pausa mínima para que el HttpListener esté activo
+        await Task.Delay(300, cancellationToken);
+
         // Abrimos el navegador del sistema con la URL de Google
         Process.Start(new ProcessStartInfo
         {
@@ -44,10 +50,22 @@ public class GoogleAuthService
             UseShellExecute = true
         });
 
-        // Escuchamos el callback de Google en localhost
-        var code = await ListenForCallbackAsync(state, cancellationToken);
+        // Esperamos el código del callback
+        var code = await listenTask;
 
-        // Enviamos el code al backend para canjear por tokens
+        // Traemos la app al frente inmediatamente después del OAuth
+        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+        {
+            var win = System.Windows.Application.Current.MainWindow;
+            if (win is not null)
+            {
+                win.WindowState = System.Windows.WindowState.Normal;
+                win.Activate();
+                win.Focus();
+            }
+        });
+
+        // Canjeamos el code por tokens de Intelectia
         var response = await _apiClient.PostAsync<AuthResponseDto>(
             "api/auth/google/callback",
             new GoogleCallbackRequest
@@ -75,30 +93,36 @@ public class GoogleAuthService
         // Esperamos la petición con timeout de 5 minutos
         var contextTask = listener.GetContextAsync();
         var timeoutTask = Task.Delay(TimeSpan.FromMinutes(5), cancellationToken);
+        var completed   = await Task.WhenAny(contextTask, timeoutTask);
 
-        var completedTask = await Task.WhenAny(contextTask, timeoutTask);
-
-        if (completedTask == timeoutTask)
+        if (completed == timeoutTask)
         {
             listener.Stop();
             throw new TimeoutException("El tiempo de autenticación con Google expiró.");
         }
 
-        var context  = await contextTask;
-        var query    = context.Request.QueryString;
-        var code     = query["code"]  ?? throw new InvalidOperationException("No se recibió código de Google.");
-        var state    = query["state"] ?? string.Empty;
+        var context = await contextTask;
+        var query   = context.Request.QueryString;
+        var code    = query["code"]  ?? throw new InvalidOperationException("No se recibió código de Google.");
+        var state   = query["state"] ?? string.Empty;
 
-        // Respondemos al navegador con una página de cierre
-        var responseHtml = Encoding.UTF8.GetBytes(
-            "<html><body style='font-family:sans-serif;text-align:center;padding:40px'>" +
-            "<h2>✅ Autenticación completada</h2>" +
-            "<p>Puedes cerrar esta ventana y volver a Intelectia.</p>" +
-            "</body></html>");
+        // Leemos el HTML desde el recurso embebido
+        var assembly     = System.Reflection.Assembly.GetExecutingAssembly();
+        var resourceName = "Intelectia.WPF.Resources.OAuthCallback.html";
+        string htmlContent;
 
-        context.Response.ContentType     = "text/html";
-        context.Response.ContentLength64 = responseHtml.Length;
-        await context.Response.OutputStream.WriteAsync(responseHtml, cancellationToken);
+        using (var stream = assembly.GetManifestResourceStream(resourceName))
+        using (var reader = new System.IO.StreamReader(stream
+            ?? throw new InvalidOperationException("Recurso OAuthCallback.html no encontrado.")))
+        {
+            htmlContent = await reader.ReadToEndAsync();
+        }
+
+        var responseBytes = Encoding.UTF8.GetBytes(htmlContent);
+
+        context.Response.ContentType     = "text/html; charset=utf-8";
+        context.Response.ContentLength64 = responseBytes.Length;
+        await context.Response.OutputStream.WriteAsync(responseBytes, cancellationToken);
         context.Response.OutputStream.Close();
 
         listener.Stop();
