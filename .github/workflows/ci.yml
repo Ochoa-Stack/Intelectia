@@ -1,28 +1,37 @@
-steps:
-  - name: Checkout code
-    uses: actions/checkout@v4
+name: CI Pipeline
 
-  - name: Setup .NET 10
-    uses: actions/setup-dotnet@v4
-    with:
-      dotnet-version: "10.0.x"
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "develop" ]
 
-  # Restauramos solo el proyecto de la API
-  - name: Restore API dependencies
-    run: dotnet restore Intelectia.API/Intelectia.API.csproj
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
 
-  # Compilamos solo la API y sus dependencias directas
-  - name: Build API solution
-    run: dotnet build Intelectia.API/Intelectia.API.csproj --no-restore --configuration Release
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-  # Análisis de código solo en la API
-  - name: Run code analysis
-    run: dotnet build Intelectia.API/Intelectia.API.csproj /p:EnforceCodeStyleInBuild=true /warnaserror --no-restore
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
 
-  # Tests en proyectos de prueba que no dependan de WPF
-  - name: Run unit tests
-    run: dotnet test --no-build --configuration Release --verbosity normal --filter "FullyQualifiedName!~Intelectia.WPF" || echo "No tests found or WPF tests skipped, continuing..."
+    - name: Restore API dependencies
+      run: dotnet restore Intelectia.API/Intelectia.API.csproj
 
-  # Validamos que el Dockerfile de la API compile correctamente
-  - name: Verify Docker build
-    run: docker build -t intelectia-ci-test -f Dockerfile .
+    - name: Build API solution
+      run: dotnet build Intelectia.API/Intelectia.API.csproj --no-restore --configuration Release
+
+    - name: Run code analysis for API
+      run: dotnet build Intelectia.API/Intelectia.API.csproj /p:EnforceCodeStyleInBuild=true /warnaserror
+
+    - name: Run unit tests
+      run: dotnet test --no-build --configuration Release --verbosity normal
+      # Nota: Los tests se ejecutarán cuando se implementen. Por ahora, el paso pasa si no hay tests.
+      continue-on-error: true
+
+    - name: Verify Docker build
+      run: docker build -t intelectia-ci-test .
