@@ -3,7 +3,7 @@
 
     <!-- Poppins e Inter son fuentes externas; si no están instaladas en el sistema,
     WPF cae al font fallback del sistema. Están embebidas como recursos del proyecto -->
-    
+
     <FontFamily x:Key="FontPoppins">Poppins, Segoe UI</FontFamily>
     <FontFamily x:Key="FontInter">Inter, Segoe UI</FontFamily>
 
@@ -36,3 +36,4 @@
     </Style>
 
 </ResourceDictionary>
+    
