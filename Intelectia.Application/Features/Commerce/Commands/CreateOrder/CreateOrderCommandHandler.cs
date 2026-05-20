@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Intelectia.Application.Common.Exceptions;
 using Intelectia.Application.Common.Interfaces;
 using Intelectia.Domain.Entities;
@@ -14,22 +13,22 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Cre
 {
     private readonly ICartRepository   _cartRepository;
     private readonly IOrderRepository  _orderRepository;
-    private readonly IApplicationDbContext _context;
+    private readonly IRepository<Payment> _paymentRepository;
     private readonly IPaymentService   _paymentService;
     private readonly IUnitOfWork       _unitOfWork;
 
     public CreateOrderCommandHandler(
         ICartRepository cartRepository,
         IOrderRepository orderRepository,
-        IApplicationDbContext context,
+        IRepository<Payment> paymentRepository,
         IPaymentService paymentService,
         IUnitOfWork unitOfWork)
     {
-        _cartRepository  = cartRepository;
-        _orderRepository = orderRepository;
-        _context         = context;
-        _paymentService  = paymentService;
-        _unitOfWork      = unitOfWork;
+        _cartRepository    = cartRepository;
+        _orderRepository   = orderRepository;
+        _paymentRepository = paymentRepository;
+        _paymentService    = paymentService;
+        _unitOfWork        = unitOfWork;
     }
 
     public async Task<CreateOrderResponse> Handle(
@@ -82,7 +81,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Cre
             AmountInCents         = (long)(total * 100)
         };
 
-        await _context.Payments.AddAsync(payment, cancellationToken);
+        await _paymentRepository.AddAsync(payment, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new CreateOrderResponse

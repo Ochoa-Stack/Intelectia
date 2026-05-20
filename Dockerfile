@@ -1,0 +1,27 @@
+# Compilación
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# Copiamos los .csproj y restauramos dependencias
+COPY ["Intelectia.Domain/Intelectia.Domain.csproj", "Intelectia.Domain/"]
+COPY ["Intelectia.Shared/Intelectia.Shared.csproj", "Intelectia.Shared/"]
+COPY ["Intelectia.Application/Intelectia.Application.csproj", "Intelectia.Application/"]
+COPY ["Intelectia.Infrastructure/Intelectia.Infrastructure.csproj", "Intelectia.Infrastructure/"]
+COPY ["Intelectia.API/Intelectia.API.csproj", "Intelectia.API/"]
+RUN dotnet restore "Intelectia.API/Intelectia.API.csproj"
+
+# Copiamos el código y publicamos
+COPY . .
+WORKDIR "/src/Intelectia.API"
+RUN dotnet publish "Intelectia.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Runtime de Producción
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+WORKDIR /app
+
+# .NET 10 usa ASPNETCORE_HTTP_PORTS por defecto en contenedores
+ENV ASPNETCORE_HTTP_PORTS=8080
+EXPOSE 8080
+
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "Intelectia.API.dll"]

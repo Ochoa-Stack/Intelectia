@@ -15,7 +15,7 @@ public class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
         builder.HasIndex(ci => new { ci.CartId, ci.BookId }).IsUnique();
 
         // Precio capturado al momento de agregar al carrito
-        builder.Property(ci => ci.PriceSnapshot).HasColumnType("decimal(18,2)");
+        builder.Property(ci => ci.PriceSnapshot).HasColumnType("numeric(18,2)");
 
         // Restrict para no eliminar CartItems si el libro se desactiva
         builder.HasOne(ci => ci.Book)

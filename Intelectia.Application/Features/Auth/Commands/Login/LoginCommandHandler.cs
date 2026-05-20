@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Intelectia.Application.Common.Exceptions;
 using Intelectia.Application.Common.Interfaces;
 using Intelectia.Domain.Enums;
@@ -13,22 +12,22 @@ namespace Intelectia.Application.Features.Auth.Commands.Login;
 public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly ITokenService _tokenService;
-    private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
 
     public LoginCommandHandler(
         IUserRepository userRepository,
+        IRefreshTokenRepository refreshTokenRepository,
         IPasswordHasher passwordHasher,
         ITokenService tokenService,
-        IApplicationDbContext context,
         IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
+        _refreshTokenRepository = refreshTokenRepository;
         _passwordHasher = passwordHasher;
         _tokenService = tokenService;
-        _context = context;
         _unitOfWork = unitOfWork;
     }
 
@@ -46,16 +45,14 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponseDto
 
         // Revocamos los refresh tokens activos de este usuario directamente en el DbSet
         // para evitar conflictos de tracking al mezclar entidades cargadas y nuevas
-        var activeTokens = await _context.RefreshTokens
-            .Where(t => t.UserId == user.Id && t.RevokedAt == null && t.UsedAt == null && t.ExpiresAt > DateTime.UtcNow)
-            .ToListAsync(cancellationToken);
+        var activeTokens = await _refreshTokenRepository.GetActiveTokensByUserIdAsync(user.Id, cancellationToken);
 
         foreach (var token in activeTokens)
             token.RevokedAt = DateTime.UtcNow;
 
         // Creamos el nuevo refresh token y lo añadimos directamente al DbSet (estado = Added)
         var refreshTokenValue = _tokenService.GenerateRefreshToken();
-        await _context.RefreshTokens.AddAsync(new RefreshTokenEntity
+        await _refreshTokenRepository.AddAsync(new RefreshTokenEntity
         {
             UserId    = user.Id,
             Token     = refreshTokenValue,

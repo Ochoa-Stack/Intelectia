@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Intelectia.Domain.Entities;
 using Intelectia.Domain.Enums;
 using Intelectia.Domain.Interfaces.Repositories;
@@ -83,6 +83,13 @@ public class BookRepository : IBookRepository
             .Include(b => b.Reviews)
                 .ThenInclude(r => r.User)
             .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+
+    public async Task<IReadOnlyList<Book>> GetVendorBooksAsync(Guid vendorProfileId, CancellationToken cancellationToken = default)
+        => await _context.Books
+            .Include(b => b.Category)
+            .Where(b => b.VendorProfileId == vendorProfileId && !b.IsDeleted)
+            .OrderByDescending(b => b.CreatedAt)
+            .ToListAsync(cancellationToken);
 
     public async Task AddAsync(Book book, CancellationToken cancellationToken = default)
         => await _context.Books.AddAsync(book, cancellationToken);

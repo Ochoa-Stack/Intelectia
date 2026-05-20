@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Intelectia.Application.Common.Exceptions;
 using Intelectia.Application.Common.Interfaces;
 using Intelectia.Domain.Entities;
@@ -13,33 +12,26 @@ namespace Intelectia.Application.Features.Auth.Commands.RefreshToken;
 public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthResponseDto>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly ITokenService _tokenService;
-    private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
 
     public RefreshTokenCommandHandler(
         IUserRepository userRepository,
+        IRefreshTokenRepository refreshTokenRepository,
         ITokenService tokenService,
-        IApplicationDbContext context,
         IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
+        _refreshTokenRepository = refreshTokenRepository;
         _tokenService = tokenService;
-        _context = context;
         _unitOfWork = unitOfWork;
     }
 
     public async Task<AuthResponseDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         // Buscamos el refresh token en la base de datos con todos los datos necesarios
-        var storedToken = await _context.RefreshTokens
-            .Include(r => r.User)
-                .ThenInclude(u => u.StudentProfile)
-            .Include(r => r.User)
-                .ThenInclude(u => u.VendorProfile)
-            .Include(r => r.User)
-                .ThenInclude(u => u.RefreshTokens)
-            .FirstOrDefaultAsync(r => r.Token == request.Token, cancellationToken);
+        var storedToken = await _refreshTokenRepository.GetByTokenWithUserProfilesAsync(request.Token, cancellationToken);
 
         // Si no existe o ya no es válido rechazamos la petición
         if (storedToken is null || !storedToken.IsActive)

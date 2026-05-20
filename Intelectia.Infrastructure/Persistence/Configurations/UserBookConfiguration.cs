@@ -15,7 +15,7 @@ public class UserBookConfiguration : IEntityTypeConfiguration<UserBook>
         builder.HasIndex(ub => new { ub.UserId, ub.BookId }).IsUnique();
 
         // Precisión para el porcentaje de progreso (0.00 – 100.00)
-        builder.Property(ub => ub.ReadingProgress).HasColumnType("decimal(5,2)");
+        builder.Property(ub => ub.ReadingProgress).HasColumnType("numeric(5,2)");
 
         builder.HasOne(ub => ub.User)
                .WithMany(u => u.UserBooks)

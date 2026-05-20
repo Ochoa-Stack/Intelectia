@@ -11,7 +11,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.ToTable("Orders");
         builder.HasKey(o => o.Id);
 
-        builder.Property(o => o.Total).HasColumnType("decimal(18,2)");
+        builder.Property(o => o.Total).HasColumnType("numeric(18,2)");
 
         // Estado como entero en la BD
         builder.Property(o => o.Status).HasConversion<int>();
