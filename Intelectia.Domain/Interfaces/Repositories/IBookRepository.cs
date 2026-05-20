@@ -20,6 +20,9 @@ public interface IBookRepository
     // Trae un libro por ID con sus reseñas y categoría
     Task<Book?> GetByIdWithDetailsAsync(Guid id, CancellationToken cancellationToken = default);
 
+    // Trae todos los libros de un vendedor con su categoría
+    Task<IReadOnlyList<Book>> GetVendorBooksAsync(Guid vendorProfileId, CancellationToken cancellationToken = default);
+
     // Agrega un libro nuevo
     Task AddAsync(Book book, CancellationToken cancellationToken = default);
 

@@ -1,26 +1,24 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Intelectia.Application.Common.Interfaces;
 using Intelectia.Domain.Interfaces;
+using Intelectia.Domain.Interfaces.Repositories;
 
 namespace Intelectia.Application.Features.Auth.Commands.Logout;
 
 public class LogoutCommandHandler : IRequestHandler<LogoutCommand>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public LogoutCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
+    public LogoutCommandHandler(IRefreshTokenRepository refreshTokenRepository, IUnitOfWork unitOfWork)
     {
-        _context = context;
+        _refreshTokenRepository = refreshTokenRepository;
         _unitOfWork = unitOfWork;
     }
 
     public async Task Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
         // Buscamos el refresh token que el cliente quiere invalidar
-        var token = await _context.RefreshTokens
-            .FirstOrDefaultAsync(r => r.Token == request.RefreshToken, cancellationToken);
+        var token = await _refreshTokenRepository.GetByTokenAsync(request.RefreshToken, cancellationToken);
 
         // Si no existe simplemente ignoramos — el resultado es el mismo: sesión cerrada
         if (token is null || !token.IsActive)

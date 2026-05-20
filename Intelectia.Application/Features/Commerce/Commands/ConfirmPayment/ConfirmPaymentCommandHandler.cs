@@ -1,7 +1,5 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Intelectia.Application.Common.Interfaces;
 using Intelectia.Domain.Entities;
 using Intelectia.Domain.Enums;
 using Intelectia.Domain.Interfaces;
@@ -12,20 +10,20 @@ namespace Intelectia.Application.Features.Commerce.Commands.ConfirmPayment;
 public class ConfirmPaymentCommandHandler : IRequestHandler<ConfirmPaymentCommand>
 {
     private readonly IOrderRepository      _orderRepository;
-    private readonly IApplicationDbContext _context;
+    private readonly IRepository<UserBook> _userBookRepository;
     private readonly IUnitOfWork           _unitOfWork;
     private readonly ILogger<ConfirmPaymentCommandHandler> _logger;
 
     public ConfirmPaymentCommandHandler(
         IOrderRepository orderRepository,
-        IApplicationDbContext context,
+        IRepository<UserBook> userBookRepository,
         IUnitOfWork unitOfWork,
         ILogger<ConfirmPaymentCommandHandler> logger)
     {
-        _orderRepository = orderRepository;
-        _context         = context;
-        _unitOfWork      = unitOfWork;
-        _logger          = logger;
+        _orderRepository    = orderRepository;
+        _userBookRepository = userBookRepository;
+        _unitOfWork         = unitOfWork;
+        _logger             = logger;
     }
 
     public async Task Handle(ConfirmPaymentCommand request, CancellationToken cancellationToken)
@@ -72,14 +70,14 @@ public class ConfirmPaymentCommandHandler : IRequestHandler<ConfirmPaymentComman
                 continue;
 
             // No duplicar si el libro ya está en la biblioteca (Idempotencia)
-            var alreadyOwned = await _context.UserBooks
+            var alreadyOwned = await _userBookRepository
                 .AnyAsync(ub => ub.UserId == order.UserId && ub.BookId == item.BookId,
                     cancellationToken);
 
             if (alreadyOwned)
                 continue;
 
-            await _context.UserBooks.AddAsync(new UserBook
+            await _userBookRepository.AddAsync(new UserBook
             {
                 UserId     = order.UserId,
                 BookId     = item.BookId,

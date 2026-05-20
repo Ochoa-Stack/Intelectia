@@ -1,24 +1,29 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using Intelectia.Application.Common.Interfaces;
 using Intelectia.Domain.Entities;
 using Intelectia.Domain.Interfaces;
-using Intelectia.Shared.DTOs.Groups;
 
 namespace Intelectia.API.Hubs;
 
 [Authorize]
 public class ChatHub : Hub
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IRepository<GroupMember> _groupMemberRepository;
+    private readonly IRepository<User> _userRepository;
+    private readonly IRepository<GroupMessage> _groupMessageRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ChatHub(IApplicationDbContext context, IUnitOfWork unitOfWork)
+    public ChatHub(
+        IRepository<GroupMember> groupMemberRepository,
+        IRepository<User> userRepository,
+        IRepository<GroupMessage> groupMessageRepository,
+        IUnitOfWork unitOfWork)
     {
-        _context    = context;
-        _unitOfWork = unitOfWork;
+        _groupMemberRepository  = groupMemberRepository;
+        _userRepository         = userRepository;
+        _groupMessageRepository = groupMessageRepository;
+        _unitOfWork             = unitOfWork;
     }
 
     // El cliente se une al canal SignalR del grupo
@@ -26,7 +31,7 @@ public class ChatHub : Hub
     {
         var userId = GetUserId();
         var groupGuid = Guid.Parse(groupId);
-        var isMember = await _context.GroupMembers
+        var isMember = await _groupMemberRepository
             .AnyAsync(m => m.GroupId == groupGuid && m.UserId == userId);
 
         if (!isMember)
@@ -43,7 +48,7 @@ public class ChatHub : Hub
     {
         var userId = GetUserId();
         var groupGuid = Guid.Parse(groupId);
-        var isMember = await _context.GroupMembers
+        var isMember = await _groupMemberRepository
             .AnyAsync(m => m.GroupId == groupGuid && m.UserId == userId);
 
         if (isMember)
@@ -59,7 +64,7 @@ public class ChatHub : Hub
 
         // Verificamos que el usuario sea miembro del grupo
         var groupGuid = Guid.Parse(groupId);
-        var isMember = await _context.GroupMembers
+        var isMember = await _groupMemberRepository
             .AnyAsync(m => m.GroupId == groupGuid &&
                            m.UserId == userId &&
                            !m.IsDeleted);
@@ -71,7 +76,7 @@ public class ChatHub : Hub
         }
 
         // Obtenemos los datos del usuario para construir el DTO
-        var user = await _context.Users
+        var user = await _userRepository
             .FirstOrDefaultAsync(u => u.Id == userId);
 
         if (user is null) return;
@@ -84,11 +89,11 @@ public class ChatHub : Hub
             Content = content.Trim()
         };
 
-        await _context.GroupMessages.AddAsync(message);
+        await _groupMessageRepository.AddAsync(message);
         await _unitOfWork.SaveChangesAsync(default);
 
         // Transmitimos el mensaje a todos los miembros conectados al grupo
-        var dto = new GroupMessageDto
+        var dto = new Intelectia.Shared.DTOs.Groups.GroupMessageDto
         {
             Id           = message.Id,
             GroupId      = message.GroupId,

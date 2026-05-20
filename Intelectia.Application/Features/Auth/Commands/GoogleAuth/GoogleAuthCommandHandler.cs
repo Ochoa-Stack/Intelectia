@@ -15,26 +15,26 @@ namespace Intelectia.Application.Features.Auth.Commands.GoogleAuth;
 public class GoogleAuthCommandHandler : IRequestHandler<GoogleAuthCommand, AuthResponseDto>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
     private readonly ITokenService   _tokenService;
     private readonly IUnitOfWork     _unitOfWork;
-    private readonly IApplicationDbContext _context;
     private readonly IConfiguration  _configuration;
     private readonly IHttpClientFactory _httpClientFactory;
 
     public GoogleAuthCommandHandler(
         IUserRepository userRepository,
+        IRefreshTokenRepository refreshTokenRepository,
         ITokenService tokenService,
         IUnitOfWork unitOfWork,
-        IApplicationDbContext context,
         IConfiguration configuration,
         IHttpClientFactory httpClientFactory)
     {
-        _userRepository    = userRepository;
-        _tokenService      = tokenService;
-        _unitOfWork        = unitOfWork;
-        _context           = context;
-        _configuration     = configuration;
-        _httpClientFactory = httpClientFactory;
+        _userRepository         = userRepository;
+        _refreshTokenRepository = refreshTokenRepository;
+        _tokenService           = tokenService;
+        _unitOfWork             = unitOfWork;
+        _configuration          = configuration;
+        _httpClientFactory      = httpClientFactory;
     }
 
     public async Task<AuthResponseDto> Handle(
@@ -79,7 +79,7 @@ public class GoogleAuthCommandHandler : IRequestHandler<GoogleAuthCommand, AuthR
 
         // Generamos refresh token y lo asociamos al usuario
         var refreshTokenValue = _tokenService.GenerateRefreshToken();
-        await _context.RefreshTokens.AddAsync(new RefreshTokenEntity
+        await _refreshTokenRepository.AddAsync(new RefreshTokenEntity
         {
             UserId    = user.Id,
             Token     = refreshTokenValue,

@@ -5,6 +5,7 @@ using Intelectia.Application.Common.Interfaces;
 using Intelectia.Domain.Interfaces;
 using Intelectia.Domain.Interfaces.Repositories;
 using Intelectia.Infrastructure.Persistence;
+using Intelectia.Infrastructure.Persistence.Repositories;
 using Intelectia.Infrastructure.Repositories;
 using Intelectia.Infrastructure.Services;
 
@@ -22,13 +23,14 @@ public static class DependencyInjection
                 configuration.GetConnectionString("Default"),
                 sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
-        // Exponemos el contexto a través de la interfaz de Application
-        services.AddScoped<IApplicationDbContext>(
-            p => p.GetRequiredService<AppDbContext>());
-
-        // Registramos el patrón Unit of Work y el repositorio genérico
+        // Registramos el patrón Unit of Work y los repositorios genéricos
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IVendorRepository, VendorRepository>();
+        services.AddScoped<IUserBookRepository, UserBookRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IReviewRepository, ReviewRepository>();
 
         // Registramos los repositorios concretos de auth
         services.AddScoped<IUserRepository, UserRepository>();

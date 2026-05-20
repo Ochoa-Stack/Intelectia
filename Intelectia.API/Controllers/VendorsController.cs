@@ -2,13 +2,13 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Intelectia.Application.Features.Vendor.Commands.BecomeVendor;
 using Intelectia.Application.Features.Vendor.Commands.PublishBook;
 using Intelectia.Application.Features.Vendor.Queries.GetVendorBooks;
 using Intelectia.Application.Features.Vendor.Queries.GetVendorStats;
-using Intelectia.Application.Common.Interfaces;
+using Intelectia.Domain.Entities;
 using Intelectia.Domain.Enums;
+using Intelectia.Domain.Interfaces;
 using Intelectia.Shared.DTOs.Vendor;
 
 namespace Intelectia.API.Controllers;
@@ -19,12 +19,12 @@ namespace Intelectia.API.Controllers;
 public class VendorsController : ControllerBase
 {
     private readonly IMediator _mediator;
-    private readonly IApplicationDbContext _context;
+    private readonly IRepository<VendorProfile> _vendorProfileRepository;
 
-    public VendorsController(IMediator mediator, IApplicationDbContext context)
+    public VendorsController(IMediator mediator, IRepository<VendorProfile> vendorProfileRepository)
     {
         _mediator = mediator;
-        _context  = context;
+        _vendorProfileRepository = vendorProfileRepository;
     }
 
     // Activa el perfil de vendedor para el usuario autenticado
@@ -97,7 +97,7 @@ public class VendorsController : ControllerBase
     private async Task<Guid> GetVendorProfileIdAsync(CancellationToken cancellationToken)
     {
         var userId = GetUserId();
-        var vendorProfile = await _context.VendorProfiles
+        var vendorProfile = await _vendorProfileRepository
             .FirstOrDefaultAsync(
                 vp => vp.UserId == userId && vp.IsActive && !vp.IsDeleted,
                 cancellationToken);

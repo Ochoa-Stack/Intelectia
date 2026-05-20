@@ -9,17 +9,17 @@ namespace Intelectia.Application.Features.Library.Commands.TranslateText;
 public class TranslateTextCommandHandler : IRequestHandler<TranslateTextCommand, TranslationDto>
 {
     private readonly ITranslationService   _translationService;
-    private readonly IApplicationDbContext _context;
+    private readonly IRepository<TranslationHistory> _translationHistoryRepository;
     private readonly IUnitOfWork           _unitOfWork;
 
     public TranslateTextCommandHandler(
         ITranslationService translationService,
-        IApplicationDbContext context,
+        IRepository<TranslationHistory> translationHistoryRepository,
         IUnitOfWork unitOfWork)
     {
-        _translationService = translationService;
-        _context            = context;
-        _unitOfWork         = unitOfWork;
+        _translationService           = translationService;
+        _translationHistoryRepository = translationHistoryRepository;
+        _unitOfWork                   = unitOfWork;
     }
 
     public async Task<TranslationDto> Handle(
@@ -43,7 +43,7 @@ public class TranslateTextCommandHandler : IRequestHandler<TranslateTextCommand,
             BookId         = request.BookId
         };
 
-        await _context.TranslationHistories.AddAsync(history, cancellationToken);
+        await _translationHistoryRepository.AddAsync(history, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return new TranslationDto
