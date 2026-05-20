@@ -17,11 +17,11 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // Conectamos EF Core con SQL Server usando la connection string de user-secrets
+        // Conectamos EF Core con PostgreSQL usando la connection string
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(
+            options.UseNpgsql(
                 configuration.GetConnectionString("Default"),
-                sql => sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
+                npgsql => npgsql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
 
         // Registramos el patrón Unit of Work y los repositorios genéricos
         services.AddScoped<IUnitOfWork, UnitOfWork>();

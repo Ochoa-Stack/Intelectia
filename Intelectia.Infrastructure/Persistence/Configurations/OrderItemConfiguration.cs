@@ -12,7 +12,7 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         builder.HasKey(oi => oi.Id);
 
         // Precio inmutable al momento de la compra
-        builder.Property(oi => oi.PriceSnapshot).HasColumnType("decimal(18,2)");
+        builder.Property(oi => oi.PriceSnapshot).HasColumnType("numeric(18,2)");
 
         // Restrict: no perder el historial de compras si el libro cambia
         builder.HasOne(oi => oi.Book)

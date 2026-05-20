@@ -24,7 +24,7 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
         builder.Property(b => b.Format).HasConversion<int>();
 
         // El precio con precisión monetaria estándar
-        builder.Property(b => b.Price).HasColumnType("decimal(18,2)");
+        builder.Property(b => b.Price).HasColumnType("numeric(18,2)");
 
         // Índices para acelerar la búsqueda por título y autor
         builder.HasIndex(b => b.Title);
