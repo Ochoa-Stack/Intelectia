@@ -1,6 +1,8 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
+using System.Threading.RateLimiting;
 using Intelectia.Application;
 using Intelectia.Infrastructure;
 using Intelectia.Infrastructure.Persistence;
@@ -74,10 +76,40 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddHealthChecks();
 
-// Política de CORS abierta solo para desarrollo
+// Leemos los orígenes permitidos desde la configuración
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? new[] { "*" };
+
 builder.Services.AddCors(options =>
-    options.AddPolicy("DevPolicy", p =>
-        p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+{
+    options.AddPolicy("DefaultPolicy", p =>
+    {
+        if (allowedOrigins.Contains("*"))
+        {
+            // Permitimos todo solo si está configurado explícitamente (Desarrollo)
+            p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        }
+        else
+        {
+            // Restringimos a orígenes específicos y permitimos credenciales (Producción)
+            p.WithOrigins(allowedOrigins)
+             .AllowAnyMethod()
+             .AllowAnyHeader()
+             .AllowCredentials();
+        }
+    });
+});
+
+// Configuramos límites de peticiones para prevenir fuerza bruta
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("AuthPolicy", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.PermitLimit = 5; // Máximo 5 intentos por minuto
+        opt.QueueLimit = 0;
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
 
 // Construye la instancia de la aplicación web configurada (Pipeline)
 var app = builder.Build();
@@ -91,6 +123,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
+app.UseMiddleware<SecurityHeadersMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -98,7 +131,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("DevPolicy");
+app.UseCors("DefaultPolicy");
+app.UseRateLimiter();
 app.UseHttpsRedirection();
 
 // Dado que el orden importa; se ejecuta primero autenticación, luego autorización

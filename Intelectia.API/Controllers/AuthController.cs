@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Intelectia.Application.Features.Auth.Commands.ForgotPassword;
 using Intelectia.Application.Features.Auth.Commands.Login;
 using Intelectia.Application.Features.Auth.Commands.Logout;
@@ -14,6 +15,7 @@ namespace Intelectia.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[EnableRateLimiting("AuthPolicy")]
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
