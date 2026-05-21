@@ -5,9 +5,18 @@ Ecosistema académico de escritorio para estudiantes universitarios: marketplace
 [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?style=flat&logo=dotnet)](https://dotnet.microsoft.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat&logo=postgresql)](https://www.postgresql.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![CI](https://github.com/Ochoa-Stack/Intelectia/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Ochoa-Stack/Intelectia/actions/workflows/ci.yml)
+[![CI](https://github.com/Ochoa-Stack/Intelectia/actions/workflows/ci.yml/badge.svg)](https://github.com/Ochoa-Stack/Intelectia/actions/workflows/ci.yml)
 
-> **Status:** Producción gratuita (Free-Tier) • Desarrollado por **Elias Ochoa**
+> Deploy API: `https://intelectia-api.onrender.com/health`\
+> **Status:** Producción gratuita
+
+---
+
+## Resumen
+
+Intelectia es un ecosistema académico unificado que opera bajo dos roles integrados: un portal de estudio para estudiantes (biblioteca personal, traducción contextual, gestor de citas) y un panel de venta para proveedores (marketplace, inventario, estadísticas). Ambos contextos coexisten en una única sesión de usuario, eliminando la fragmentación típica de herramientas académicas dispersas y reduciendo la carga cognitiva asociada al cambio constante entre aplicaciones.
+
+El sistema se construyo aplicando arquitectura pura con inversión de dependencias estricta, donde la capa de dominio no conoce infraestructura externa y cada caso de uso se ejecuta mediante un pipeline CQRS validado combinada con contenerización Docker y despliegue en servicios free-tier, garantiza que el proyecto sea práctico sin comprometer la seguridad ni la calidad del código.
 
 ---
 
@@ -17,11 +26,11 @@ Intelectia sigue **Clean Architecture** con inversión de dependencias estricta 
 
 ```
 Intelectia/
-├── Domain/             # Entidades, reglas de negocio puras
-├── Application/        # Casos de uso y validación
+├── Domain/             # Entidades, reglas de negocio puras (sin dependencias externas)
+├── Application/        # Casos de uso (CQRS con MediatR), validación (FluentValidation)
 ├── Infrastructure/     # EF Core, repositorios, servicios externos (Stripe, DeepL, Azure)
 ├── API/                # Controllers, SignalR, middleware, configuración de arranque
-├── WPF/                # Cliente de escritorio
+├── WPF/                # Cliente de escritorio (zero referencias a UI en ViewModels)
 └── Shared/             # DTOs y enums compartidos entre API y cliente
 ```
 
@@ -88,6 +97,20 @@ La API estará disponible en `http://localhost:8080` y el health check en `/heal
 - **Desarrollo:** Usa `dotnet user-secrets` para credenciales locales.
 - **Producción:** Inyecta variables de entorno en el panel de tu proveedor de nube.
 - **Nunca** commitees credenciales reales al repositorio.
+
+---
+
+## Estado del Proyecto
+
+Este proyecto fue desarrollado como parte de mi formación en **TSU Desarrollo de Software Multiplataforma**. Representa la aplicación práctica de:
+
+- Clean Architecture y principios SOLID
+- Patrón CQRS con MediatR y validación centralizada
+- Autenticación JWT con rotación de refresh tokens
+- Despliegue en la nube con Docker y PostgreSQL (Free Tier)
+- Integración de cliente WPF con API REST en producción
+
+> **Importante**: El contenido del marketplace (libros, grupos, etc.) no está poblado en la base de datos de producción. Para fines de demostración, el flujo de autenticación y la arquitectura están completamente funcionales.
 
 ---
 

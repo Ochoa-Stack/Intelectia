@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Intelectia.WPF.Services;
 using Intelectia.WPF.ViewModels;
 using Intelectia.WPF.ViewModels.Auth;
@@ -58,6 +59,14 @@ public partial class App : Application
 
     private static void ConfigureServices(IServiceCollection services)
     {
+        // Leemos la URL base desde configuración para permitir cambio entre dev/prod
+        var config = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: true)
+            .Build();
+
+        var baseUrl = config["ApiSettings:BaseUrl"] ?? "https://localhost:8080";
+
         // Servicios de infraestructura
         services.AddSingleton<TokenStore>();
         services.AddSingleton<ToastService>();
@@ -69,7 +78,7 @@ public partial class App : Application
         // HttpClient con handler de auth
         services.AddHttpClient(nameof(ApiClient), client =>
         {
-            client.BaseAddress = new Uri("http://localhost:5028/");
+            client.BaseAddress = new Uri(baseUrl.EndsWith("/") ? baseUrl : baseUrl + "/");
         })
         .AddHttpMessageHandler<AuthTokenHandler>();
 
