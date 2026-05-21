@@ -8,21 +8,21 @@ Esta guía explica cómo desplegar el backend de Intelectia en servicios free-ti
 
 ## Opción A: Render.com (Recomendada)
 
-### Paso 1: Preparar la Base de Datos
+### Paso: Preparar la Base de Datos
 
-1. Crea una cuenta gratuita en [Render.com](https://render.com).
-2. En el dashboard, selecciona **New +** → **PostgreSQL**.
-3. Configura:
+- Crea una cuenta gratuita en [Render.com](https://render.com).
+- En el dashboard, selecciona **New +** → **PostgreSQL**.
+- Configura:
    - Name: `intelectia-db`
    - Region: La más cercana a tus usuarios
    - Plan: **Free** (1 GB storage, 90 días de inactividad antes de suspensión)
-4. Anota la **Internal Database URL** (se usa dentro de Render) y la **External Database URL** (para conexión local de debugging).
+- Anota la **Internal Database URL** (se usa dentro de Render) y la **External Database URL** (para conexión local de debugging).
 
-### Paso 2: Desplegar el Web Service (API)
+### Paso: Desplegar el Web Service (API)
 
-1. En Render, selecciona **New +** → **Web Service**.
-2. Conecta tu repositorio de GitHub `Intelectia`.
-3. Configura:
+- En Render, selecciona **New +** → **Web Service**.
+- Conecta tu repositorio de GitHub `Intelectia`.
+- Configura:
    - Name: `intelectia-api`
    - Region: Misma que la base de datos
    - Branch: `main` (o `develop` para staging)
@@ -30,7 +30,7 @@ Esta guía explica cómo desplegar el backend de Intelectia en servicios free-ti
    - Start Command: `dotnet /app/publish/Intelectia.API.dll`
    - Plan: **Free**
 
-### Paso 3: Configurar Variables de Entorno
+### Paso: Configurar Variables de Entorno
 
 En la sección **Environment** del Web Service, agrega:
 
@@ -48,11 +48,11 @@ En la sección **Environment** del Web Service, agrega:
 
 > **Importante:** Los valores sensibles nunca deben estar en el código. Render los inyecta como variables de entorno en runtime.
 
-### Paso 4: Desplegar y Verificar
+### Paso: Desplegar y Verificar
 
-1. Haz clic en **Create Web Service**.
-2. Render construirá la imagen Docker y desplegará la API.
-3. Una vez listo, visita `https://intelectia-api.onrender.com/health` para confirmar que responde "Healthy".
+- Haz clic en **Create Web Service**.
+- Render construirá la imagen Docker y desplegará la API.
+- Una vez listo, visita `https://intelectia-api.onrender.com/health` para confirmar que responde "Healthy".
 
 ---
 
@@ -60,10 +60,10 @@ En la sección **Environment** del Web Service, agrega:
 
 Railway ofrece un flujo similar con PostgreSQL nativo:
 
-1. Crea un proyecto nuevo y añade un servicio **PostgreSQL**.
-2. Añade un segundo servicio conectando tu repositorio de GitHub.
-3. Railway detectará automáticamente el `Dockerfile` y configurará las variables `DATABASE_URL`.
-4. Mapea `DATABASE_URL` a `ConnectionStrings__Default` en las variables de entorno de la API.
+- Crea un proyecto nuevo y añade un servicio **PostgreSQL**.
+- Añade un segundo servicio conectando tu repositorio de GitHub.
+- Railway detectará automáticamente el `Dockerfile` y configurará las variables `DATABASE_URL`.
+- Mapea `DATABASE_URL` a `ConnectionStrings__Default` en las variables de entorno de la API.
 
 ---
 
@@ -73,18 +73,18 @@ La primera vez que despliegues, debes aplicar las migraciones a la base de datos
 
 ### Método A: Desde tu máquina local (recomendado para inicial)
 
-1. Obtén la **External Database URL** de Render/Railway.
-2. Configúrala temporalmente en tus user-secrets locales:
+- Obtén la **External Database URL** de Render/Railway.
+- Configúrala temporalmente en tus user-secrets locales:
    ```bash
    cd Intelectia.API
    dotnet user-secrets set "ConnectionStrings:Default" "<external-url>"
    ```
-3. Ejecuta las migraciones:
+- Ejecuta las migraciones:
    ```bash
    cd ../Intelectia.Infrastructure
    dotnet ef database update --startup-project ../Intelectia.API
    ```
-4. Remueve el secreto temporal después:
+- Remueve el secreto temporal después:
    ```bash
    dotnet user-secrets remove "ConnectionStrings:Default"
    ```

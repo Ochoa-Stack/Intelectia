@@ -90,7 +90,7 @@ builder.Services.AddCors(options =>
     {
         if (allowedOrigins.Contains("*"))
         {
-            // Permitimos todo solo si está configurado explícitamente (Desarrollo)
+            // Permitimos todo solo para desarrollo o clientes nativos
             p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
         }
         else
